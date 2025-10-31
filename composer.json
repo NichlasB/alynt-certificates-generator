@@ -1,0 +1,30 @@
+{
+    "name": "alynt/certificates-generator",
+    "description": "WordPress plugin for generating PDF certificates with drag-and-drop template editing, webhook support, and email notifications",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Alynt",
+            "email": "support@alynt.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "tecnickcom/tcpdf": "^6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Alynt\\CertificatesGenerator\\": "includes/"
+        }
+    },
+    "keywords": [
+        "wordpress",
+        "plugin",
+        "certificates",
+        "pdf",
+        "tcpdf",
+        "webhooks",
+        "email"
+    ]
+}
