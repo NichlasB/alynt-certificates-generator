@@ -1,0 +1,50 @@
+.acg-template-preview {
+  position: relative;
+  border: 1px solid #ccd0d4;
+  padding: 10px;
+  background: #fff;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.acg-template-preview img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.acg-template-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  pointer-events: none;
+}
+
+.acg-variable-marker {
+  position: absolute;
+  background: rgba(35, 40, 45, 0.85);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: move;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.acg-variables-table input[type="text"],
+.acg-variables-table input[type="number"],
+.acg-variables-table select {
+  width: 100%;
+  max-width: 160px;
+}
+
+.acg-variable-style .acg-style-row {
+  margin-bottom: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}

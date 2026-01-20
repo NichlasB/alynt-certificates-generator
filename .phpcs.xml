@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Plugin Standard">
+    <!-- Include WordPress standards -->
+    <rule ref="WordPress">
+        <!-- Customize exclusions as needed -->
+        <exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+    </rule>
+
+    <!-- File exclusions -->
+    <exclude-pattern>/vendor/</exclude-pattern>
+    <exclude-pattern>/node_modules/</exclude-pattern>
+    <exclude-pattern>/tests/</exclude-pattern>
+    <exclude-pattern>/assets/dist/</exclude-pattern>
+
+    <!-- Check only PHP files -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Show progress -->
+    <arg value="p"/>
+</ruleset>
