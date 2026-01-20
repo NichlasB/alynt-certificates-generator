@@ -188,7 +188,7 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 		$filters = $this->get_filters();
 		$templates = get_posts(
 			array(
-				'post_type'      => 'acg_certificate_template',
+				'post_type'      => 'acg_cert_template',
 				'post_status'    => 'any',
 				'numberposts'    => -1,
 				'fields'         => 'ids',

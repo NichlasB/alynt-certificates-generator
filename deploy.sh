@@ -1,17 +1,24 @@
 #!/bin/bash
-# Deploy script for alynt-certificate-generator
-# Configure these variables:
-PLUGIN_SLUG="alynt-certificate-generator"
-REMOTE_USER="your-ssh-user"
+set -e
+
 REMOTE_HOST="dev-root"
-REMOTE_PATH="/var/www/bp-play.demostatus.com/htdocs/wp-content/plugins/${PLUGIN_SLUG}"
+REMOTE_PATH="/var/www/bp-play.demostatus.com/htdocs/wp-content/plugins/alynt-certificates-generator"
+
+echo "🚀 Deploying alynt-certificate-generator to staging..."
 
 rsync -avz --delete \
-  --exclude 'node_modules' \
-  --exclude '.git' \
-  --exclude '.husky' \
-  --exclude 'scripts' \
-  --exclude '*.map' \
-  ./ "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/"
+  --exclude=".git" \
+  --exclude=".gitignore" \
+  --exclude="node_modules" \
+  --exclude=".DS_Store" \
+  --exclude=".env" \
+  --exclude="README.md" \
+  --exclude="scripts" \
+  --exclude="*.map" \
+  --exclude="composer.phar" \
+  --exclude="SETUP_NOTES_WINDOWS.txt" \
+  ./ \
+  "${REMOTE_HOST}:${REMOTE_PATH}/"
 
-echo "Deployed ${PLUGIN_SLUG} to staging"
+echo "✅ Deployment complete!"
+echo "📍 Remote path: ${REMOTE_PATH}"

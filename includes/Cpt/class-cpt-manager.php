@@ -16,6 +16,8 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 	public function register_post_types(): void {
 		$this->register_certificate_template_cpt();
 		$this->register_email_template_cpt();
+		$this->maybe_migrate_certificate_templates();
+		$this->disable_block_editor_for_templates();
 	}
 
 	/**
@@ -49,15 +51,38 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 			'public'              => false,
 			'show_ui'             => true,
 			'show_in_menu'        => 'alynt-certificate-generator',
-			'capability_type'     => 'acg_certificate_template',
-			'capabilities'        => $this->get_capabilities(),
-			'map_meta_cap'        => true,
+			'capability_type'     => 'post',
 			'show_in_rest'        => true,
 			'supports'            => array( 'title' ),
 			'menu_icon'           => 'dashicons-awards',
 		);
 
-		\register_post_type( 'acg_certificate_template', $args );
+		\register_post_type( 'acg_cert_template', $args );
+	}
+
+	/**
+	 * Migrate legacy certificate template post type slug.
+	 */
+	private function maybe_migrate_certificate_templates(): void {
+		$option_key = 'acg_cert_template_migrated';
+		if ( \get_option( $option_key ) ) {
+			return;
+		}
+
+		global $wpdb;
+		$legacy_type = 'acg_certificate_template';
+		$new_type    = 'acg_cert_template';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration.
+		$wpdb->update(
+			$wpdb->posts,
+			array( 'post_type' => $new_type ),
+			array( 'post_type' => $legacy_type ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
+		\update_option( $option_key, 1 );
 	}
 
 	/**
@@ -83,9 +108,7 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 			'public'              => false,
 			'show_ui'             => true,
 			'show_in_menu'        => 'alynt-certificate-generator',
-			'capability_type'     => 'acg_email_template',
-			'capabilities'        => $this->get_capabilities(),
-			'map_meta_cap'        => true,
+			'capability_type'     => 'post',
 			'show_in_rest'        => true,
 			'supports'            => array( 'title' ),
 		);
@@ -98,7 +121,7 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 	 */
 	private function register_certificate_template_meta(): void {
 		\register_post_meta(
-			'acg_certificate_template',
+			'acg_cert_template',
 			'acg_template_image_id',
 			array(
 				'type'              => 'integer',
@@ -110,7 +133,7 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 		);
 
 		\register_post_meta(
-			'acg_certificate_template',
+			'acg_cert_template',
 			'acg_template_orientation',
 			array(
 				'type'              => 'string',
@@ -122,7 +145,7 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 		);
 
 		\register_post_meta(
-			'acg_certificate_template',
+			'acg_cert_template',
 			'acg_template_variables',
 			array(
 				'type'              => 'string',
@@ -134,7 +157,7 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 		);
 
 		\register_post_meta(
-			'acg_certificate_template',
+			'acg_cert_template',
 			'acg_template_permissions',
 			array(
 				'type'              => 'string',
@@ -146,7 +169,7 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 		);
 
 		\register_post_meta(
-			'acg_certificate_template',
+			'acg_cert_template',
 			'acg_template_webhook_settings',
 			array(
 				'type'              => 'string',
@@ -236,31 +259,6 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 	}
 
 	/**
-	 * Build the capabilities map.
-	 *
-	 * @return array<string, string>
-	 */
-	private function get_capabilities(): array {
-		$cap = ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE;
-
-		return array(
-			'edit_post'          => $cap,
-			'read_post'          => $cap,
-			'delete_post'        => $cap,
-			'edit_posts'         => $cap,
-			'edit_others_posts'  => $cap,
-			'publish_posts'      => $cap,
-			'read_private_posts' => $cap,
-			'delete_posts'       => $cap,
-			'delete_private_posts' => $cap,
-			'delete_published_posts' => $cap,
-			'delete_others_posts' => $cap,
-			'edit_private_posts' => $cap,
-			'edit_published_posts' => $cap,
-		);
-	}
-
-	/**
 	 * Sanitize orientation value.
 	 *
 	 * @param string $value Orientation.
@@ -315,5 +313,37 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 	 */
 	public function can_manage_templates(): bool {
 		return \current_user_can( ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE );
+	}
+
+	/**
+	 * Disable block editor for certificate and email template CPTs.
+	 *
+	 * This ensures metabox form data is submitted via traditional POST,
+	 * which is required for saving template variables and permissions.
+	 */
+	private function disable_block_editor_for_templates(): void {
+		\add_filter(
+			'use_block_editor_for_post_type',
+			function ( bool $use, string $post_type ): bool {
+				if ( in_array( $post_type, array( 'acg_cert_template', 'acg_email_template' ), true ) ) {
+					return false;
+				}
+				return $use;
+			},
+			999,
+			2
+		);
+
+		\add_filter(
+			'use_block_editor_for_post',
+			function ( bool $use, \WP_Post $post ): bool {
+				if ( in_array( $post->post_type, array( 'acg_cert_template', 'acg_email_template' ), true ) ) {
+					return false;
+				}
+				return $use;
+			},
+			999,
+			2
+		);
 	}
 }

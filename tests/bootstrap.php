@@ -11,7 +11,7 @@ if ( ! defined( 'ALYNT_CERTIFICATE_GENERATOR_SETTINGS_OPTION' ) ) {
 	define( 'ALYNT_CERTIFICATE_GENERATOR_SETTINGS_OPTION', 'alynt_certificate_generator_settings' );
 }
 if ( ! defined( 'ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE' ) ) {
-	define( 'ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE', 'manage_alynt_certificates' );
+	define( 'ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE', 'manage_options' );
 }
 if ( ! defined( 'MINUTE_IN_SECONDS' ) ) {
 	define( 'MINUTE_IN_SECONDS', 60 );

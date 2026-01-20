@@ -33,7 +33,7 @@ $wpdb->query( "DROP TABLE IF EXISTS {$webhook_table}" );
 if ( $delete_cpt_posts ) {
 	$post_ids = \get_posts(
 		array(
-			'post_type'      => array( 'acg_certificate_template', 'acg_email_template' ),
+			'post_type'      => array( 'acg_cert_template', 'acg_certificate_template', 'acg_email_template' ),
 			'post_status'    => 'any',
 			'numberposts'    => -1,
 			'fields'         => 'ids',

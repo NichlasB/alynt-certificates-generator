@@ -263,6 +263,7 @@ if (builder) {
     fontSelect.addEventListener('change', () => {
       variable.style.font_family = fontSelect.value;
       updateHiddenInput();
+      renderOverlay();
     });
 
     const sizeInput = document.createElement('input');
@@ -272,6 +273,7 @@ if (builder) {
     sizeInput.addEventListener('input', () => {
       variable.style.font_size = Number(sizeInput.value) || 0;
       updateHiddenInput();
+      renderOverlay();
     });
 
     const colorInput = document.createElement('input');
@@ -280,6 +282,7 @@ if (builder) {
     colorInput.addEventListener('input', () => {
       variable.style.color = colorInput.value;
       updateHiddenInput();
+      renderOverlay();
     });
 
     const alignSelect = buildSelect(
@@ -293,6 +296,7 @@ if (builder) {
     alignSelect.addEventListener('change', () => {
       variable.style.align = alignSelect.value;
       updateHiddenInput();
+      renderOverlay();
     });
 
     const boldInput = document.createElement('input');
@@ -301,6 +305,7 @@ if (builder) {
     boldInput.addEventListener('change', () => {
       variable.style.bold = boldInput.checked;
       updateHiddenInput();
+      renderOverlay();
     });
 
     const italicInput = document.createElement('input');
@@ -309,6 +314,7 @@ if (builder) {
     italicInput.addEventListener('change', () => {
       variable.style.italic = italicInput.checked;
       updateHiddenInput();
+      renderOverlay();
     });
 
     const styleRow = document.createElement('div');
@@ -408,6 +414,17 @@ if (builder) {
     tableBody.appendChild(row);
   };
 
+  const applyMarkerStyles = (marker, variable) => {
+    const { scaleX, scaleY } = getScale();
+    const style = variable.style || {};
+    marker.style.fontFamily = style.font_family || 'Arial';
+    marker.style.fontSize = `${Math.round((style.font_size || 24) * Math.min(scaleX, scaleY))}px`;
+    marker.style.color = style.color || '#000000';
+    marker.style.fontWeight = style.bold ? 'bold' : 'normal';
+    marker.style.fontStyle = style.italic ? 'italic' : 'normal';
+    marker.style.textAlign = style.align || 'left';
+  };
+
   const renderOverlay = () => {
     if (!overlay || !previewImage) {
       return;
@@ -419,6 +436,7 @@ if (builder) {
       marker.dataset.varId = variable.id;
       marker.textContent = variable.label || variable.key;
       updateOverlayPosition(marker, variable);
+      applyMarkerStyles(marker, variable);
       overlay.appendChild(marker);
       enableDrag(marker, variable);
     });

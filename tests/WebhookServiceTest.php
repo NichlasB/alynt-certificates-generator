@@ -16,7 +16,7 @@ final class WebhookServiceTest extends TestCase {
 		Functions\when( 'sanitize_text_field' )->returnArg( 1 );
 		Functions\when( 'sanitize_key' )->returnArg( 1 );
 		Functions\when( 'wp_unslash' )->returnArg( 1 );
-		Functions\when( 'get_post' )->justReturn( (object) array( 'post_type' => 'acg_certificate_template' ) );
+		Functions\when( 'get_post' )->justReturn( (object) array( 'post_type' => 'acg_cert_template' ) );
 		Functions\when( 'get_post_meta' )->justReturn(
 			json_encode(
 				array(

@@ -53,7 +53,7 @@ class Alynt_Certificate_Generator_Certificate_Service {
 		bool $skip_notifications = false
 	) {
 		$template = \get_post( $template_id );
-		if ( ! $template || 'acg_certificate_template' !== $template->post_type ) {
+		if ( ! $template || 'acg_cert_template' !== $template->post_type ) {
 			return new WP_Error( 'acg_template_missing', __( 'Template not found.', 'alynt-certificate-generator' ) );
 		}
 

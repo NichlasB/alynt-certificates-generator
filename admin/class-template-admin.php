@@ -37,7 +37,7 @@ class Alynt_Certificate_Generator_Template_Admin {
 			'acg_template_image',
 			__( 'Template Image', 'alynt-certificate-generator' ),
 			array( $this, 'render_image_metabox' ),
-			'acg_certificate_template',
+			'acg_cert_template',
 			'normal',
 			'high'
 		);
@@ -46,7 +46,7 @@ class Alynt_Certificate_Generator_Template_Admin {
 			'acg_template_variables',
 			__( 'Variables & Preview', 'alynt-certificate-generator' ),
 			array( $this, 'render_variables_metabox' ),
-			'acg_certificate_template',
+			'acg_cert_template',
 			'normal',
 			'default'
 		);
@@ -55,7 +55,7 @@ class Alynt_Certificate_Generator_Template_Admin {
 			'acg_template_access',
 			__( 'Form Access', 'alynt-certificate-generator' ),
 			array( $this, 'render_access_metabox' ),
-			'acg_certificate_template',
+			'acg_cert_template',
 			'side',
 			'default'
 		);
@@ -64,7 +64,7 @@ class Alynt_Certificate_Generator_Template_Admin {
 			'acg_template_webhooks',
 			__( 'Webhook Settings', 'alynt-certificate-generator' ),
 			array( $this, 'render_webhook_metabox' ),
-			'acg_certificate_template',
+			'acg_cert_template',
 			'normal',
 			'default'
 		);
@@ -81,7 +81,7 @@ class Alynt_Certificate_Generator_Template_Admin {
 		}
 
 		$screen = \get_current_screen();
-		if ( null === $screen || 'acg_certificate_template' !== $screen->post_type ) {
+		if ( null === $screen || 'acg_cert_template' !== $screen->post_type ) {
 			return;
 		}
 
@@ -106,10 +106,10 @@ class Alynt_Certificate_Generator_Template_Admin {
 					'restNonce'   => wp_create_nonce( 'wp_rest' ),
 					'constraints' => array(
 						'maxSize'    => 5 * 1024 * 1024,
-						'minWidth'   => 1200,
-						'minHeight'  => 900,
-						'minWidthPortrait'  => 900,
-						'minHeightPortrait' => 1200,
+						'minWidth'   => 1000,
+						'minHeight'  => 800,
+						'minWidthPortrait'  => 800,
+						'minHeightPortrait' => 1000,
 						'maxWidth'   => 6000,
 						'maxHeight'  => 6000,
 					),
@@ -149,7 +149,7 @@ class Alynt_Certificate_Generator_Template_Admin {
 
 		\wp_nonce_field( 'acg_template_save', 'acg_template_nonce' );
 
-		echo '<p>' . esc_html__( 'Upload a JPG or PNG (max 5MB, 1200x900 to 6000x6000).', 'alynt-certificate-generator' ) . '</p>';
+		echo '<p>' . esc_html__( 'Upload a JPG or PNG (max 5MB, 1000x800 to 6000x6000).', 'alynt-certificate-generator' ) . '</p>';
 		echo '<input type="hidden" id="acg_template_image_id" name="acg_template_image_id" value="' . esc_attr( (string) $image_id ) . '" />';
 		echo '<button type="button" class="button" id="acg_template_select_image">' . esc_html__( 'Select Image', 'alynt-certificate-generator' ) . '</button>';
 		echo '<div id="acg_template_image_preview" style="margin-top:10px;">';
@@ -171,6 +171,8 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param \WP_Post $post Current post.
 	 */
 	public function render_variables_metabox( \WP_Post $post ): void {
+		\wp_nonce_field( 'acg_template_save', 'acg_template_nonce', false );
+
 		$image_id = (int) \get_post_meta( $post->ID, 'acg_template_image_id', true );
 		$image_url = '';
 		$image_width = 0;
@@ -222,6 +224,8 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param \WP_Post $post Current post.
 	 */
 	public function render_access_metabox( \WP_Post $post ): void {
+		\wp_nonce_field( 'acg_template_save', 'acg_template_nonce', false );
+
 		$permissions = $this->get_permissions( $post->ID );
 		$access      = $permissions['access'];
 		$roles       = $permissions['roles'];
@@ -251,6 +255,8 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param \WP_Post $post Current post.
 	 */
 	public function render_webhook_metabox( \WP_Post $post ): void {
+		\wp_nonce_field( 'acg_template_save', 'acg_template_nonce', false );
+
 		$settings = $this->get_webhook_settings( $post->ID );
 		$incoming = $settings['incoming'];
 		$outgoing = $settings['outgoing'];
@@ -299,22 +305,25 @@ class Alynt_Certificate_Generator_Template_Admin {
 			return;
 		}
 
-		$image_id = isset( $_POST['acg_template_image_id'] ) ? absint( wp_unslash( $_POST['acg_template_image_id'] ) ) : 0;
-		$orientation = isset( $_POST['acg_template_orientation'] ) ? sanitize_key( wp_unslash( $_POST['acg_template_orientation'] ) ) : 'landscape';
+		// Only save image and orientation if form fields are present.
+		if ( isset( $_POST['acg_template_image_id'] ) ) {
+			$image_id = absint( wp_unslash( $_POST['acg_template_image_id'] ) );
+			$orientation = isset( $_POST['acg_template_orientation'] ) ? sanitize_key( wp_unslash( $_POST['acg_template_orientation'] ) ) : 'landscape';
 
-		if ( '' === $orientation ) {
-			$orientation = 'landscape';
-		}
+			if ( '' === $orientation ) {
+				$orientation = 'landscape';
+			}
 
-		$validation = $this->validate_template_image( $image_id, $orientation );
-		if ( ! $validation['valid'] ) {
-			$this->store_admin_error( $post_id, $validation['message'] );
-		} else {
-			\update_post_meta( $post_id, 'acg_template_image_id', $image_id );
-		}
+			$validation = $this->validate_template_image( $image_id, $orientation );
+			if ( ! $validation['valid'] ) {
+				$this->store_admin_error( $post_id, $validation['message'] );
+			} else {
+				\update_post_meta( $post_id, 'acg_template_image_id', $image_id );
+			}
 
-		if ( in_array( $orientation, array( 'landscape', 'portrait' ), true ) ) {
-			\update_post_meta( $post_id, 'acg_template_orientation', $orientation );
+			if ( in_array( $orientation, array( 'landscape', 'portrait' ), true ) ) {
+				\update_post_meta( $post_id, 'acg_template_orientation', $orientation );
+			}
 		}
 
 		if ( isset( $_POST['acg_template_variables'] ) ) {
@@ -356,7 +365,12 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param int $post_id Post ID.
 	 */
 	private function save_permissions( int $post_id ): void {
-		$access = isset( $_POST['acg_template_access'] ) ? sanitize_key( wp_unslash( $_POST['acg_template_access'] ) ) : 'any';
+		// Only save if the form field is present to avoid wiping data on REST saves.
+		if ( ! isset( $_POST['acg_template_access'] ) ) {
+			return;
+		}
+
+		$access = sanitize_key( wp_unslash( $_POST['acg_template_access'] ) );
 		$roles  = isset( $_POST['acg_template_roles'] ) ? (array) wp_unslash( $_POST['acg_template_roles'] ) : array();
 
 		$roles = array_map( 'sanitize_key', $roles );
@@ -405,8 +419,13 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param int $post_id Post ID.
 	 */
 	private function save_webhook_settings( int $post_id ): void {
+		// Only save if the form field is present to avoid wiping data on REST saves.
+		if ( ! isset( $_POST['acg_webhook_api_key'] ) ) {
+			return;
+		}
+
 		$current = $this->get_webhook_settings( $post_id );
-		$api_key = isset( $_POST['acg_webhook_api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['acg_webhook_api_key'] ) ) : $current['incoming']['api_key'];
+		$api_key = sanitize_text_field( wp_unslash( $_POST['acg_webhook_api_key'] ) );
 		$signature_secret = isset( $_POST['acg_webhook_signature_secret'] ) ? sanitize_text_field( wp_unslash( $_POST['acg_webhook_signature_secret'] ) ) : $current['incoming']['signature_secret'];
 		$rate_limit = isset( $_POST['acg_webhook_rate_limit'] ) ? absint( wp_unslash( $_POST['acg_webhook_rate_limit'] ) ) : $current['incoming']['rate_limit'];
 
@@ -530,17 +549,17 @@ class Alynt_Certificate_Generator_Template_Admin {
 		}
 
 		if ( 'portrait' === $orientation ) {
-			if ( $width < 900 || $height < 1200 ) {
+			if ( $width < 800 || $height < 1000 ) {
 				return array(
 					'valid'   => false,
-					'message' => __( 'Portrait templates must be at least 900x1200 pixels.', 'alynt-certificate-generator' ),
+					'message' => __( 'Portrait templates must be at least 800x1000 pixels.', 'alynt-certificate-generator' ),
 				);
 			}
 		} else {
-			if ( $width < 1200 || $height < 900 ) {
+			if ( $width < 1000 || $height < 800 ) {
 				return array(
 					'valid'   => false,
-					'message' => __( 'Landscape templates must be at least 1200x900 pixels.', 'alynt-certificate-generator' ),
+					'message' => __( 'Landscape templates must be at least 1000x800 pixels.', 'alynt-certificate-generator' ),
 				);
 			}
 		}

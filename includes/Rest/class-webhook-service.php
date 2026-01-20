@@ -47,7 +47,7 @@ class Alynt_Certificate_Generator_Webhook_Service {
 	public function handle_incoming( WP_REST_Request $request ) {
 		$template_id = (int) $request['id'];
 		$post = \get_post( $template_id );
-		if ( ! $post || 'acg_certificate_template' !== $post->post_type ) {
+		if ( ! $post || 'acg_cert_template' !== $post->post_type ) {
 			return new WP_Error( 'acg_template_missing', __( 'Template not found.', 'alynt-certificate-generator' ), array( 'status' => 404 ) );
 		}
 

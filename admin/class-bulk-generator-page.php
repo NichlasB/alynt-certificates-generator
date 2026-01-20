@@ -51,7 +51,7 @@ class Alynt_Certificate_Generator_Bulk_Generator_Page {
 	private function render_upload_form(): void {
 		$templates = \get_posts(
 			array(
-				'post_type'      => 'acg_certificate_template',
+				'post_type'      => 'acg_cert_template',
 				'post_status'    => 'any',
 				'numberposts'    => -1,
 				'fields'         => 'ids',

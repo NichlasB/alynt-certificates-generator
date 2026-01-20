@@ -28,8 +28,96 @@ define( 'ALYNT_CERTIFICATE_GENERATOR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ALYNT_CERTIFICATE_GENERATOR_TEXT_DOMAIN', 'alynt-certificate-generator' );
 define( 'ALYNT_CERTIFICATE_GENERATOR_SETTINGS_OPTION', 'alynt_certificate_generator_settings' );
 define( 'ALYNT_CERTIFICATE_GENERATOR_DB_VERSION_OPTION', 'alynt_certificate_generator_db_version' );
-define( 'ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE', 'manage_alynt_certificates' );
+define( 'ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE', 'manage_options' );
 define( 'ALYNT_CERTIFICATE_GENERATOR_AS_GROUP', 'alynt_certificate_generator' );
+
+/**
+ * Optional debug notice to help diagnose missing menus.
+ *
+ * Enable by visiting any wp-admin page with `?acg_debug=1` (admins only).
+ */
+function alynt_certificate_generator_debug_notice(): void {
+	if ( ! \is_admin() ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Debug-only, read-only.
+	if ( ! isset( $_GET['acg_debug'] ) ) {
+		return;
+	}
+
+	if ( ! \current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	$autoload = ALYNT_CERTIFICATE_GENERATOR_PLUGIN_DIR . 'vendor/autoload.php';
+	$has_autoload = file_exists( $autoload );
+	$has_gd = extension_loaded( 'gd' );
+	$can_manage = \current_user_can( ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE );
+	$can_manage_options = \current_user_can( 'manage_options' );
+	$wp_version = (string) \get_bloginfo( 'version' );
+	$php_version = PHP_VERSION;
+	$meets_php = version_compare( $php_version, '7.4', '>=' );
+	$meets_wp  = version_compare( $wp_version, '6.0', '>=' );
+	$meets_requirements = $meets_php && $meets_wp && $has_gd;
+
+	$roles = array();
+	$user  = \wp_get_current_user();
+	if ( $user && $user->ID ) {
+		$roles = (array) $user->roles;
+	}
+
+	$menu_has_slug = false;
+	$submenu_has_parent = false;
+	// `$menu` / `$submenu` are populated after `admin_menu`.
+	global $menu, $submenu;
+	if ( is_array( $menu ) ) {
+		foreach ( $menu as $item ) {
+			if ( isset( $item[2] ) && 'alynt-certificate-generator' === (string) $item[2] ) {
+				$menu_has_slug = true;
+				break;
+			}
+		}
+	}
+	if ( isset( $submenu['alynt-certificate-generator'] ) && is_array( $submenu['alynt-certificate-generator'] ) ) {
+		$submenu_has_parent = true;
+	}
+
+	$plugin_booted = ! empty( $GLOBALS['acg_plugin_booted'] );
+
+	printf(
+		'<div class="notice notice-info"><p><strong>%s</strong></p><ul style="margin-left:1.2em; list-style:disc;">' .
+		'<li><strong>plugin_dir</strong>: <code>%s</code></li>' .
+		'<li><strong>vendor/autoload.php</strong>: %s</li>' .
+		'<li><strong>GD extension</strong>: %s</li>' .
+		'<li><strong>WP/PHP</strong>: WP <code>%s</code>, PHP <code>%s</code> (requirements: %s)</li>' .
+		'<li><strong>current_user</strong>: ID %s, roles: <code>%s</code></li>' .
+		'<li><strong>current_user_can(manage_options)</strong>: %s</li>' .
+		'<li><strong>current_user_can(%s)</strong>: %s</li>' .
+		'<li><strong>plugin_core_booted</strong>: %s</li>' .
+		'<li><strong>menu_slug_registered</strong>: %s</li>' .
+		'<li><strong>submenu_registered</strong>: %s</li>' .
+		'</ul><p><em>Tip: remove <code>?acg_debug=1</code> to hide this notice.</em></p></div>',
+		esc_html__( 'Alynt Certificate Generator (debug)', 'alynt-certificate-generator' ),
+		esc_html( ALYNT_CERTIFICATE_GENERATOR_PLUGIN_DIR ),
+		$has_autoload ? '<span style="color:green;">present</span>' : '<span style="color:red;">missing</span>',
+		$has_gd ? '<span style="color:green;">enabled</span>' : '<span style="color:red;">missing</span>',
+		esc_html( $wp_version ),
+		esc_html( $php_version ),
+		$meets_requirements ? '<span style="color:green;">met</span>' : '<span style="color:red;">NOT met</span>',
+		esc_html( $user && $user->ID ? (string) $user->ID : '0' ),
+		esc_html( implode( ', ', array_map( 'sanitize_key', $roles ) ) ),
+		$can_manage_options ? '<span style="color:green;">true</span>' : '<span style="color:red;">false</span>',
+		esc_html( ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE ),
+		$can_manage ? '<span style="color:green;">true</span>' : '<span style="color:red;">false</span>',
+		$plugin_booted ? '<span style="color:green;">yes</span>' : '<span style="color:red;">no</span>',
+		$menu_has_slug ? '<span style="color:green;">yes</span>' : '<span style="color:red;">no</span>',
+		$submenu_has_parent ? '<span style="color:green;">yes</span>' : '<span style="color:red;">no</span>'
+	);
+}
+
+\add_action( 'admin_notices', __NAMESPACE__ . '\\alynt_certificate_generator_debug_notice' );
+\add_action( 'network_admin_notices', __NAMESPACE__ . '\\alynt_certificate_generator_debug_notice' );
 
 if ( ! alynt_certificate_generator_requirements_met() ) {
 	return;

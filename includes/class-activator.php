@@ -17,7 +17,6 @@ class Alynt_Certificate_Generator_Activator {
 	 */
 	public static function activate(): void {
 		self::verify_requirements();
-		self::add_capabilities();
 		self::initialize_options();
 		Alynt_Certificate_Generator_Database::migrate();
 	}
@@ -45,22 +44,6 @@ class Alynt_Certificate_Generator_Activator {
 				esc_html__( 'Alynt Certificate Generator requires the GD extension.', 'alynt-certificate-generator' ),
 				esc_html__( 'Plugin activation failed', 'alynt-certificate-generator' )
 			);
-		}
-	}
-
-	/**
-	 * Add plugin capabilities to required roles.
-	 */
-	private static function add_capabilities(): void {
-		$roles = array( 'administrator', 'editor', 'shop_manager' );
-
-		foreach ( $roles as $role_key ) {
-			$role = \get_role( $role_key );
-			if ( null === $role ) {
-				continue;
-			}
-
-			$role->add_cap( ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE );
 		}
 	}
 

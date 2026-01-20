@@ -47,6 +47,9 @@ class Alynt_Certificate_Generator_Plugin {
 	private $version;
 
 	public function __construct() {
+		// Helps diagnose cases where the bootstrap runs but the plugin core doesn't fully initialize.
+		$GLOBALS['acg_plugin_booted'] = true;
+
 		$this->plugin_name = ALYNT_CERTIFICATE_GENERATOR_TEXT_DOMAIN;
 		$this->version     = ALYNT_CERTIFICATE_GENERATOR_VERSION;
 		$this->loader      = new Alynt_Certificate_Generator_Loader( ALYNT_CERTIFICATE_GENERATOR_PLUGIN_DIR );
@@ -92,7 +95,7 @@ class Alynt_Certificate_Generator_Plugin {
 		$this->loader->add_action( 'admin_init', $log_page, 'register_actions' );
 		$this->loader->add_action( 'admin_init', $bulk_page, 'register_actions' );
 		$this->loader->add_action( 'add_meta_boxes', $template_admin, 'register_metaboxes' );
-		$this->loader->add_action( 'save_post_acg_certificate_template', $template_admin, 'save_template_meta' );
+		$this->loader->add_action( 'save_post_acg_cert_template', $template_admin, 'save_template_meta' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $template_admin, 'enqueue_assets' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $admin_assets, 'enqueue_assets' );
 		$this->loader->add_action( 'admin_notices', $template_admin, 'render_admin_errors' );

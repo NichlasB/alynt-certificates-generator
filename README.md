@@ -13,10 +13,19 @@ Generate PDF certificates from image templates with dynamic variables, secure do
 ## Installation
 
 1. Upload the plugin to `wp-content/plugins/alynt-certificate-generator`.
-2. Run `composer install`.
+2. Ensure PHP dependencies are present:
+   - If you have Composer available: run `composer install`
+   - Otherwise, make sure the plugin is deployed with `vendor/` included (specifically `vendor/autoload.php`)
 3. Run `npm install`.
 4. Run `npm run build`.
 5. Activate the plugin in WordPress.
+
+## Troubleshooting (no wp-admin menu visible)
+
+- **Dependencies missing**: if `vendor/autoload.php` is missing, the plugin will not boot and no menu will be registered.
+- **Capability missing**: the admin menu requires the built-in `manage_options` capability (administrators by default).
+  - If your account uses a custom role, ensure it has `manage_options`.
+- **Multisite**: the menu is registered in the **site dashboard** (not Network Admin).
 
 ## Development
 
