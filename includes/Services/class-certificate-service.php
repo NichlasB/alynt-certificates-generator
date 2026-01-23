@@ -77,7 +77,7 @@ class Alynt_Certificate_Generator_Certificate_Service {
 		}
 
 		$output_path = $this->build_output_path( $template_id, $certificate_id );
-		$rendered = $this->pdf_service->render_pdf( $template_path, $resolved, $orientation, $output_path );
+		$rendered = $this->pdf_service->render_pdf( $template_path, $resolved, $orientation, $output_path, $template_id );
 		if ( is_wp_error( $rendered ) ) {
 			return $rendered;
 		}

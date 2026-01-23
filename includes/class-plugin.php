@@ -13,6 +13,7 @@ use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Admin_Menu;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Admin_Notices;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Certificate_Log_Page;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Bulk_Generator_Page;
+use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Single_Generator_Page;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Admin_Assets;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Email_Template_Admin;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Settings;
@@ -88,12 +89,14 @@ class Alynt_Certificate_Generator_Plugin {
 		$admin_notices  = new Alynt_Certificate_Generator_Admin_Notices();
 		$log_page       = new Alynt_Certificate_Generator_Certificate_Log_Page();
 		$bulk_page      = new Alynt_Certificate_Generator_Bulk_Generator_Page();
+		$single_page    = new Alynt_Certificate_Generator_Single_Generator_Page();
 		$admin_assets   = new Alynt_Certificate_Generator_Admin_Assets();
 
 		$this->loader->add_action( 'admin_menu', $admin_menu, 'register_menu' );
 		$this->loader->add_action( 'admin_init', $settings, 'register' );
 		$this->loader->add_action( 'admin_init', $log_page, 'register_actions' );
 		$this->loader->add_action( 'admin_init', $bulk_page, 'register_actions' );
+		$this->loader->add_action( 'admin_init', $single_page, 'register_actions' );
 		$this->loader->add_action( 'add_meta_boxes', $template_admin, 'register_metaboxes' );
 		$this->loader->add_action( 'save_post_acg_cert_template', $template_admin, 'save_template_meta' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $template_admin, 'enqueue_assets' );

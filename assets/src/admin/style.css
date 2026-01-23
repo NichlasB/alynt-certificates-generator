@@ -48,3 +48,19 @@
   gap: 6px;
   align-items: center;
 }
+
+.acg-position-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.acg-position-row {
+  display: flex;
+  align-items: center;
+}
+
+.acg-position-row label {
+  min-width: 20px;
+  font-weight: 500;
+}

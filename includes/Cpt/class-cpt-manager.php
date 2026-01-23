@@ -280,20 +280,29 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 	 * @return string
 	 */
 	public function sanitize_json_string( $value ): string {
+		// DEBUG: Log sanitization.
+		error_log( 'ACG DEBUG sanitize_json_string: input type=' . gettype( $value ) . ', length=' . ( is_string( $value ) ? strlen( $value ) : 'N/A' ) );
+
 		if ( is_array( $value ) || is_object( $value ) ) {
-			return \wp_json_encode( $value );
+			$result = \wp_json_encode( $value );
+			error_log( 'ACG DEBUG sanitize_json_string: was array/object, encoded length=' . strlen( $result ) );
+			return $result;
 		}
 
 		if ( ! is_string( $value ) ) {
+			error_log( 'ACG DEBUG sanitize_json_string: not a string, returning empty' );
 			return '';
 		}
 
 		$decoded = json_decode( $value, true );
 		if ( JSON_ERROR_NONE !== json_last_error() ) {
+			error_log( 'ACG DEBUG sanitize_json_string: JSON decode failed with error=' . json_last_error_msg() . ', input=' . substr( $value, 0, 200 ) );
 			return '';
 		}
 
-		return \wp_json_encode( $decoded );
+		$result = \wp_json_encode( $decoded );
+		error_log( 'ACG DEBUG sanitize_json_string: success, output length=' . strlen( $result ) );
+		return $result;
 	}
 
 	/**

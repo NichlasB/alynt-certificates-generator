@@ -172,6 +172,11 @@ class Alynt_Certificate_Generator_Admin_Settings_Schema {
 	 * @return bool
 	 */
 	public function is_valid_tab( string $tab ): bool {
+		// The fonts tab is valid but has no schema fields (custom UI).
+		if ( 'fonts' === $tab ) {
+			return true;
+		}
+
 		foreach ( $this->get_schema() as $field ) {
 			if ( isset( $field['tab'] ) && $tab === $field['tab'] ) {
 				return true;

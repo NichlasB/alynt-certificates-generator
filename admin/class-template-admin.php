@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\AdminUi;
 
+use Alynt\CertificateGenerator\Services\Alynt_Certificate_Generator_Font_Service;
+
 class Alynt_Certificate_Generator_Template_Admin {
 	/**
 	 * Plugin name.
@@ -67,6 +69,15 @@ class Alynt_Certificate_Generator_Template_Admin {
 			'acg_cert_template',
 			'normal',
 			'default'
+		);
+
+		\add_meta_box(
+			'acg_template_fonts',
+			__( 'Custom Fonts', 'alynt-certificate-generator' ),
+			array( $this, 'render_fonts_metabox' ),
+			'acg_cert_template',
+			'side',
+			'low'
 		);
 	}
 
@@ -187,8 +198,11 @@ class Alynt_Certificate_Generator_Template_Admin {
 		}
 
 		$variables_json = (string) \get_post_meta( $post->ID, 'acg_template_variables', true );
+		// DEBUG: Log what we're loading from DB on page render.
+		error_log( 'ACG DEBUG RENDER: Loading variables for post ' . $post->ID . ', length=' . strlen( $variables_json ) );
+		error_log( 'ACG DEBUG RENDER: First 300 chars: ' . substr( $variables_json, 0, 300 ) );
 
-		echo '<input type="hidden" id="acg_template_variables" name="acg_template_variables" value="' . esc_attr( $variables_json ) . '" />';
+		echo '<input type="hidden" id="acg_template_variables_input" name="acg_template_variables" value="' . esc_attr( $variables_json ) . '" />';
 		echo '<div id="acg-template-builder" data-image-url="' . esc_attr( $image_url ) . '" data-image-width="' . esc_attr( (string) $image_width ) . '" data-image-height="' . esc_attr( (string) $image_height ) . '">';
 		echo '<div class="acg-template-preview">';
 		if ( '' !== $image_url ) {
@@ -209,6 +223,7 @@ class Alynt_Certificate_Generator_Template_Admin {
 		echo '<th>' . esc_html__( 'Key', 'alynt-certificate-generator' ) . '</th>';
 		echo '<th>' . esc_html__( 'Type', 'alynt-certificate-generator' ) . '</th>';
 		echo '<th>' . esc_html__( 'Required', 'alynt-certificate-generator' ) . '</th>';
+		echo '<th>' . esc_html__( 'Display', 'alynt-certificate-generator' ) . '</th>';
 		echo '<th>' . esc_html__( 'Style', 'alynt-certificate-generator' ) . '</th>';
 		echo '<th>' . esc_html__( 'Position', 'alynt-certificate-generator' ) . '</th>';
 		echo '<th>' . esc_html__( 'Actions', 'alynt-certificate-generator' ) . '</th>';
@@ -231,12 +246,13 @@ class Alynt_Certificate_Generator_Template_Admin {
 		$roles       = $permissions['roles'];
 
 		echo '<p>' . esc_html__( 'Choose who can access the frontend form for this template.', 'alynt-certificate-generator' ) . '</p>';
-		echo '<select name="acg_template_access" id="acg_template_access">';
+		echo '<select name="acg_template_access" id="acg_template_access_select">';
 		echo '<option value="any"' . selected( $access, 'any', false ) . '>' . esc_html__( 'Any logged-in user', 'alynt-certificate-generator' ) . '</option>';
 		echo '<option value="roles"' . selected( $access, 'roles', false ) . '>' . esc_html__( 'Specific roles', 'alynt-certificate-generator' ) . '</option>';
 		echo '</select>';
 
-		echo '<div class="acg-template-roles" style="margin-top:10px;">';
+		$roles_style = 'roles' === $access ? 'margin-top:10px;' : 'margin-top:10px;display:none;';
+		echo '<div class="acg-template-roles" id="acg_template_roles_wrap" style="' . esc_attr( $roles_style ) . '">';
 		foreach ( \wp_roles()->roles as $role_key => $role ) {
 			$checked = in_array( $role_key, $roles, true );
 			printf(
@@ -247,6 +263,30 @@ class Alynt_Certificate_Generator_Template_Admin {
 			);
 		}
 		echo '</div>';
+
+		?>
+		<script>
+		(function() {
+			var select = document.getElementById('acg_template_access_select');
+			var rolesWrap = document.getElementById('acg_template_roles_wrap');
+			console.log('ACG Form Access: select=', select, 'rolesWrap=', rolesWrap);
+			if (!select || !rolesWrap) {
+				console.log('ACG Form Access: Elements not found, aborting');
+				return;
+			}
+			
+			select.addEventListener('change', function() {
+				console.log('ACG Form Access: change event, value=', select.value);
+				if (select.value === 'roles') {
+					rolesWrap.style.display = 'block';
+				} else {
+					rolesWrap.style.display = 'none';
+				}
+			});
+			console.log('ACG Form Access: Event listener attached');
+		})();
+		</script>
+		<?php
 	}
 
 	/**
@@ -285,6 +325,83 @@ class Alynt_Certificate_Generator_Template_Admin {
 		echo '<label><input type="checkbox" name="acg_webhook_outgoing_enabled" value="1" ' . checked( $outgoing['enabled'], true, false ) . ' /> ';
 		echo esc_html__( 'Enable outgoing webhook', 'alynt-certificate-generator' ) . '</label>';
 		echo '</p>';
+	}
+
+	/**
+	 * Render custom fonts metabox.
+	 *
+	 * @param \WP_Post $post Current post.
+	 */
+	public function render_fonts_metabox( \WP_Post $post ): void {
+		$font_service = new Alynt_Certificate_Generator_Font_Service();
+		$global_fonts = $font_service->get_global_fonts();
+		$template_fonts = $font_service->get_template_fonts( $post->ID );
+		$allowed_weights = Alynt_Certificate_Generator_Font_Service::ALLOWED_WEIGHTS;
+
+		echo '<div class="acg-template-fonts">';
+
+		// Show global fonts count.
+		$global_count = count( $global_fonts );
+		echo '<p>';
+		printf(
+			/* translators: %d: number of global fonts */
+			esc_html__( '%d global font(s) available.', 'alynt-certificate-generator' ),
+			(int) $global_count
+		);
+		echo ' <a href="' . esc_url( admin_url( 'admin.php?page=alynt-certificate-generator&tab=fonts' ) ) . '">';
+		echo esc_html__( 'Manage Global Fonts', 'alynt-certificate-generator' );
+		echo '</a></p>';
+
+		echo '<hr />';
+
+		// Template-specific fonts.
+		echo '<h4>' . esc_html__( 'Template-Specific Fonts', 'alynt-certificate-generator' ) . '</h4>';
+		echo '<p class="description">' . esc_html__( 'Upload fonts that are only available for this template.', 'alynt-certificate-generator' ) . '</p>';
+
+		if ( ! empty( $template_fonts ) ) {
+			echo '<ul style="margin: 10px 0;">';
+			foreach ( $template_fonts as $family_slug => $family_data ) {
+				$weights_list = array();
+				foreach ( $family_data['weights'] as $weight_key => $weight_data ) {
+					$weights_list[] = $allowed_weights[ $weight_key ] ?? $weight_key;
+				}
+				echo '<li><strong>' . esc_html( $family_data['family'] ) . '</strong>: ' . esc_html( implode( ', ', $weights_list ) ) . '</li>';
+			}
+			echo '</ul>';
+		} else {
+			echo '<p><em>' . esc_html__( 'No template-specific fonts uploaded.', 'alynt-certificate-generator' ) . '</em></p>';
+		}
+
+		// Quick upload form for template-specific font.
+		echo '<div style="margin-top: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd;">';
+		echo '<p><strong>' . esc_html__( 'Quick Upload', 'alynt-certificate-generator' ) . '</strong></p>';
+
+		echo '<p>';
+		echo '<label>' . esc_html__( 'Family Name:', 'alynt-certificate-generator' ) . '<br />';
+		echo '<input type="text" name="acg_template_font_family" class="widefat" placeholder="' . esc_attr__( 'e.g., Roboto', 'alynt-certificate-generator' ) . '" />';
+		echo '</label>';
+		echo '</p>';
+
+		echo '<p>';
+		echo '<label>' . esc_html__( 'Weight:', 'alynt-certificate-generator' ) . '<br />';
+		echo '<select name="acg_template_font_weight" class="widefat">';
+		foreach ( $allowed_weights as $weight_key => $weight_label ) {
+			echo '<option value="' . esc_attr( $weight_key ) . '">' . esc_html( $weight_label ) . '</option>';
+		}
+		echo '</select>';
+		echo '</label>';
+		echo '</p>';
+
+		echo '<p>';
+		echo '<label>' . esc_html__( 'Font File (TTF/OTF):', 'alynt-certificate-generator' ) . '<br />';
+		echo '<input type="file" name="acg_template_font_file" accept=".ttf,.otf" class="widefat" />';
+		echo '</label>';
+		echo '</p>';
+
+		echo '<p class="description">' . esc_html__( 'The font will be uploaded when you save/update the template.', 'alynt-certificate-generator' ) . '</p>';
+		echo '</div>';
+
+		echo '</div>';
 	}
 
 	/**
@@ -328,11 +445,20 @@ class Alynt_Certificate_Generator_Template_Admin {
 
 		if ( isset( $_POST['acg_template_variables'] ) ) {
 			$variables_json = wp_unslash( $_POST['acg_template_variables'] );
+			// DEBUG: Log what we're saving.
+			error_log( 'ACG DEBUG: Saving variables for post ' . $post_id );
+			error_log( 'ACG DEBUG: Raw POST value length: ' . strlen( $_POST['acg_template_variables'] ) );
+			error_log( 'ACG DEBUG: After wp_unslash length: ' . strlen( $variables_json ) );
+			error_log( 'ACG DEBUG: First 500 chars: ' . substr( $variables_json, 0, 500 ) );
 			\update_post_meta( $post_id, 'acg_template_variables', $variables_json );
+			// DEBUG: Verify what was saved.
+			$saved = \get_post_meta( $post_id, 'acg_template_variables', true );
+			error_log( 'ACG DEBUG: After save, retrieved length: ' . strlen( $saved ) );
 		}
 
 		$this->save_permissions( $post_id );
 		$this->save_webhook_settings( $post_id );
+		$this->save_template_fonts( $post_id );
 	}
 
 	/**
@@ -453,6 +579,41 @@ class Alynt_Certificate_Generator_Template_Admin {
 				)
 			)
 		);
+	}
+
+	/**
+	 * Save template-specific fonts.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	private function save_template_fonts( int $post_id ): void {
+		// Check if font upload data is present.
+		if ( ! isset( $_POST['acg_template_font_family'] ) || empty( $_POST['acg_template_font_family'] ) ) {
+			return;
+		}
+
+		if ( ! isset( $_FILES['acg_template_font_file'] ) || empty( $_FILES['acg_template_font_file']['tmp_name'] ) ) {
+			return;
+		}
+
+		$family_name = sanitize_text_field( wp_unslash( $_POST['acg_template_font_family'] ) );
+		$weight = isset( $_POST['acg_template_font_weight'] ) ? sanitize_key( wp_unslash( $_POST['acg_template_font_weight'] ) ) : 'regular';
+
+		if ( '' === $family_name ) {
+			return;
+		}
+
+		$font_service = new Alynt_Certificate_Generator_Font_Service();
+		$result = $font_service->upload_font(
+			$_FILES['acg_template_font_file'],
+			$family_name,
+			$weight,
+			$post_id
+		);
+
+		if ( is_wp_error( $result ) ) {
+			$this->store_admin_error( $post_id, $result->get_error_message() );
+		}
 	}
 
 	/**

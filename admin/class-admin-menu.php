@@ -45,11 +45,11 @@ class Alynt_Certificate_Generator_Admin_Menu {
 
 		\add_submenu_page(
 			'alynt-certificate-generator',
-			__( 'Certificate Logs', 'alynt-certificate-generator' ),
-			__( 'Logs', 'alynt-certificate-generator' ),
+			__( 'Generate Certificate', 'alynt-certificate-generator' ),
+			__( 'Generate', 'alynt-certificate-generator' ),
 			ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE,
-			'alynt-certificate-logs',
-			array( $this, 'render_logs_page' )
+			'alynt-single-generator',
+			array( $this, 'render_single_generator_page' )
 		);
 
 		\add_submenu_page(
@@ -59,6 +59,25 @@ class Alynt_Certificate_Generator_Admin_Menu {
 			ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE,
 			'alynt-bulk-generator',
 			array( $this, 'render_bulk_page' )
+		);
+
+		\add_submenu_page(
+			'alynt-certificate-generator',
+			__( 'Certificate Logs', 'alynt-certificate-generator' ),
+			__( 'Logs', 'alynt-certificate-generator' ),
+			ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE,
+			'alynt-certificate-logs',
+			array( $this, 'render_logs_page' )
+		);
+
+		// Add Settings as last submenu item (same slug as parent).
+		\add_submenu_page(
+			'alynt-certificate-generator',
+			__( 'Settings', 'alynt-certificate-generator' ),
+			__( 'Settings', 'alynt-certificate-generator' ),
+			ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE,
+			'alynt-certificate-generator',
+			array( $this, 'render_settings_page' )
 		);
 	}
 
@@ -89,6 +108,14 @@ class Alynt_Certificate_Generator_Admin_Menu {
 	 */
 	public function render_bulk_page(): void {
 		$page = new Alynt_Certificate_Generator_Bulk_Generator_Page();
+		$page->render_page();
+	}
+
+	/**
+	 * Render the single certificate generator page.
+	 */
+	public function render_single_generator_page(): void {
+		$page = new Alynt_Certificate_Generator_Single_Generator_Page();
 		$page->render_page();
 	}
 }
