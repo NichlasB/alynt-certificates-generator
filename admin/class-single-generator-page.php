@@ -250,6 +250,18 @@ class Alynt_Certificate_Generator_Single_Generator_Page {
 				echo '<p class="description">' . esc_html__( 'Accepted formats: JPG, PNG (max 5MB)', 'alynt-certificate-generator' ) . '</p>';
 				break;
 
+			case 'select':
+				$options = isset( $variable['options'] ) && is_array( $variable['options'] ) ? $variable['options'] : array();
+				echo '<select name="' . esc_attr( $field_name ) . '" id="' . esc_attr( $field_id ) . '" class="regular-text" ' . ( $required ? 'required' : '' ) . '>';
+				echo '<option value="">' . esc_html__( '— Select —', 'alynt-certificate-generator' ) . '</option>';
+				foreach ( $options as $option ) {
+					$opt_value = isset( $option['value'] ) ? $option['value'] : '';
+					$opt_label = isset( $option['label'] ) ? $option['label'] : $opt_value;
+					echo '<option value="' . esc_attr( $opt_label ) . '">' . esc_html( $opt_label ) . '</option>';
+				}
+				echo '</select>';
+				break;
+
 			case 'text':
 			default:
 				echo '<input type="text" name="' . esc_attr( $field_name ) . '" id="' . esc_attr( $field_id ) . '" class="regular-text" ' . ( $required ? 'required' : '' ) . ' />';

@@ -98,6 +98,16 @@ class Alynt_Certificate_Generator_Frontend {
 
 			if ( 'image' === $type ) {
 				$output .= '<input type="file" name="' . esc_attr( $field_name ) . '" id="' . esc_attr( $field_name ) . '" accept="image/png,image/jpeg" ' . ( $required ? 'required' : '' ) . ' />';
+			} elseif ( 'select' === $type ) {
+				$options = isset( $variable['options'] ) && is_array( $variable['options'] ) ? $variable['options'] : array();
+				$output .= '<select name="' . esc_attr( $field_name ) . '" id="' . esc_attr( $field_name ) . '" ' . ( $required ? 'required' : '' ) . '>';
+				$output .= '<option value="">' . esc_html__( '— Select —', 'alynt-certificate-generator' ) . '</option>';
+				foreach ( $options as $option ) {
+					$opt_value = isset( $option['value'] ) ? $option['value'] : '';
+					$opt_label = isset( $option['label'] ) ? $option['label'] : $opt_value;
+					$output .= '<option value="' . esc_attr( $opt_label ) . '">' . esc_html( $opt_label ) . '</option>';
+				}
+				$output .= '</select>';
 			} else {
 				$input_type = 'date' === $type ? 'date' : 'text';
 				$output .= '<input type="' . esc_attr( $input_type ) . '" name="' . esc_attr( $field_name ) . '" id="' . esc_attr( $field_name ) . '" ' . ( $required ? 'required' : '' ) . ' />';

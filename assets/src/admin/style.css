@@ -64,3 +64,73 @@
   min-width: 20px;
   font-weight: 500;
 }
+
+/* Drag handle column */
+.acg-drag-handle {
+  cursor: grab;
+  width: 30px;
+  text-align: center;
+  color: #999;
+  font-size: 16px;
+  user-select: none;
+}
+
+.acg-drag-handle:hover {
+  color: #666;
+}
+
+.acg-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Row being dragged */
+.acg-variables-table tr.acg-dragging {
+  opacity: 0.4;
+  background: #f0f0f1;
+}
+
+/* Drop target indicator */
+.acg-variables-table tr.acg-drag-over td {
+  border-top: 2px solid #2271b1;
+}
+
+/* Compact row for Bold/Italic - prevent wrapping */
+.acg-style-row-compact {
+  flex-wrap: nowrap !important;
+  white-space: nowrap;
+}
+
+/* Ensure alignment select has minimum width to show text */
+.acg-style-row-compact select {
+  min-width: 70px;
+  width: auto;
+}
+
+/* Options editor in expanded row */
+.acg-options-row td {
+  padding: 15px 20px !important;
+  background: #f9f9f9;
+  border-top: none !important;
+}
+
+.acg-options-row .acg-select-options {
+  max-width: 600px;
+}
+
+.acg-options-row .acg-option-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.acg-options-row .acg-option-row input[type="text"] {
+  max-width: none;
+  flex: 1;
+}
+
+/* Toggle button for options */
+.acg-toggle-options-btn {
+  margin-top: 5px;
+  font-size: 12px;
+}

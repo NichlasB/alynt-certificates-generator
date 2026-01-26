@@ -219,6 +219,7 @@ class Alynt_Certificate_Generator_Template_Admin {
 
 		echo '<table class="widefat fixed striped acg-variables-table">';
 		echo '<thead><tr>';
+		echo '<th style="width: 30px;"></th>'; // Drag handle column.
 		echo '<th>' . esc_html__( 'Label', 'alynt-certificate-generator' ) . '</th>';
 		echo '<th>' . esc_html__( 'Key', 'alynt-certificate-generator' ) . '</th>';
 		echo '<th>' . esc_html__( 'Type', 'alynt-certificate-generator' ) . '</th>';
