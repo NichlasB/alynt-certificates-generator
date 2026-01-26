@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Alynt Certificate Generator
  * Description: Generate PDF certificates from image templates with dynamic variables and delivery automation.
- * Version: 0.1.0
+ * Version: 0.2.2
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Alynt
@@ -21,7 +21,7 @@ namespace Alynt\CertificateGenerator;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ALYNT_CERTIFICATE_GENERATOR_VERSION', '0.1.0' );
+define( 'ALYNT_CERTIFICATE_GENERATOR_VERSION', '0.2.2' );
 define( 'ALYNT_CERTIFICATE_GENERATOR_PLUGIN_FILE', __FILE__ );
 define( 'ALYNT_CERTIFICATE_GENERATOR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'ALYNT_CERTIFICATE_GENERATOR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
