@@ -1,12 +1,23 @@
 # Release Title
 
-v0.2.0 - Initial Public Release
+v0.2.1 - Build System Update
 
 ---
 
 # Release Notes (copy below)
 
-## What's New
+## What's Changed
+
+- Added automated release builds via GitHub Actions
+- Release zip now includes all required dependencies
+- Fixed distribution packaging for WordPress plugin updates
+
+**Full Changelog**: https://github.com/NichlasB/alynt-certificates-generator/compare/v0.2.0...v0.2.1
+
+---
+---
+
+# Previous Release: v0.2.0 - Initial Public Release
 
 Initial public release of Alynt Certificate Generator.
 
