@@ -1,6 +1,6 @@
 # Release Title
 
-v0.2.1 - Build System Update
+v0.2.2 - Version Fix
 
 ---
 
@@ -8,11 +8,10 @@ v0.2.1 - Build System Update
 
 ## What's Changed
 
-- Added automated release builds via GitHub Actions
-- Release zip now includes all required dependencies
-- Fixed distribution packaging for WordPress plugin updates
+- Fixed version number in plugin header (was still showing 0.1.0)
+- All previous build system improvements from v0.2.1
 
-**Full Changelog**: https://github.com/NichlasB/alynt-certificates-generator/compare/v0.2.0...v0.2.1
+**Full Changelog**: https://github.com/NichlasB/alynt-certificates-generator/compare/v0.2.1...v0.2.2
 
 ---
 ---
