@@ -56,3 +56,7 @@ wp-config.php
 /.phpcs-cache
 /.phpunit.result.cache
 /composer.phar
+
+# Local-only workflow files
+deploy.sh
+session-context.tmp.md
