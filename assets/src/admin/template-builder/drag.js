@@ -1,6 +1,7 @@
 import { state, dom } from './state.js';
 import { getScale, getAlign, getAnchorOffsetPx, clamp01 } from './coordinates.js';
-import { updateHiddenInput } from './rest-save.js';
+import { setSaveStatus, updateHiddenInput } from './rest-save.js';
+import { i18n, sprintfString } from './i18n.js';
 
 export const updateRowPositionInputs = (variable) => {
   const row = dom.tableBody.querySelector(`tr[data-var-id="${variable.id}"]`);
@@ -33,6 +34,54 @@ export const updateOverlayPosition = (marker, variable) => {
 
   marker.style.left = `${Math.round(left)}px`;
   marker.style.top = `${Math.round(variable.y * height)}px`;
+};
+
+const updateMarkerLabel = (marker, variable) => {
+  const variableLabel = variable.label || variable.key || i18n.variable;
+  marker.setAttribute('aria-label', sprintfString(i18n.moveMarkerInstructions, variableLabel));
+};
+
+const announceMarkerPosition = (variable) => {
+  setSaveStatus(
+    sprintfString(
+      i18n.markerPositionUpdated,
+      `${(variable.x * 100).toFixed(1)}%, ${(variable.y * 100).toFixed(1)}%`,
+    ),
+  );
+};
+
+export const enableKeyboardMove = (marker, variable) => {
+  marker.tabIndex = 0;
+  marker.setAttribute('role', 'button');
+  updateMarkerLabel(marker, variable);
+
+  marker.addEventListener('keydown', (event) => {
+    const keyDeltas = {
+      ArrowLeft: [-1, 0],
+      ArrowRight: [1, 0],
+      ArrowUp: [0, -1],
+      ArrowDown: [0, 1],
+    };
+    const delta = keyDeltas[event.key];
+    if (!delta) {
+      return;
+    }
+
+    event.preventDefault();
+    const { width, height } = getScale();
+    const stepPx = event.shiftKey ? 10 : 1;
+    const deltaX = width > 0 ? (delta[0] * stepPx) / width : 0;
+    const deltaY = height > 0 ? (delta[1] * stepPx) / height : 0;
+
+    variable.x = clamp01(variable.x + deltaX);
+    variable.y = clamp01(variable.y + deltaY);
+    variable.coord_mode = 'percent_anchor';
+
+    updateOverlayPosition(marker, variable);
+    updateRowPositionInputs(variable);
+    updateHiddenInput();
+    announceMarkerPosition(variable);
+  });
 };
 
 export const enableDrag = (marker, variable) => {
@@ -94,5 +143,6 @@ export const enableDrag = (marker, variable) => {
     updateRowPositionInputs(variable);
     updateHiddenInput();
     marker.releasePointerCapture(event.pointerId);
+    announceMarkerPosition(variable);
   });
 };

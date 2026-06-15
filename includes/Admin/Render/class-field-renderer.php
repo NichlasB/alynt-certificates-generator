@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Admin\Render;
 
+defined( 'ABSPATH' ) || exit;
+
 class Alynt_Certificate_Generator_Field_Renderer {
 	/**
 	 * Render a settings field.

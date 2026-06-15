@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Admin\Settings;
 
+defined( 'ABSPATH' ) || exit;
+
 class Alynt_Certificate_Generator_Admin_Settings_Schema {
 	/**
 	 * Return schema array.
@@ -17,14 +19,14 @@ class Alynt_Certificate_Generator_Admin_Settings_Schema {
 	 */
 	public function get_schema(): array {
 		return array(
-			'pdf_storage_path' => array(
+			'pdf_storage_path'              => array(
 				'tab'         => 'general',
 				'type'        => 'text',
 				'label'       => __( 'PDF Storage Path', 'alynt-certificate-generator' ),
 				'description' => __( 'Custom upload subdirectory or leave blank for default.', 'alynt-certificate-generator' ),
 				'default'     => '',
 			),
-			'default_date_format' => array(
+			'default_date_format'           => array(
 				'tab'         => 'general',
 				'type'        => 'select',
 				'label'       => __( 'Default Date Format', 'alynt-certificate-generator' ),
@@ -38,28 +40,28 @@ class Alynt_Certificate_Generator_Admin_Settings_Schema {
 					'd F Y'  => __( 'DD Month YYYY', 'alynt-certificate-generator' ),
 				),
 			),
-			'certificate_id_prefix' => array(
+			'certificate_id_prefix'         => array(
 				'tab'         => 'general',
 				'type'        => 'text',
 				'label'       => __( 'Certificate ID Prefix', 'alynt-certificate-generator' ),
 				'description' => __( 'Prefix applied to generated certificate IDs.', 'alynt-certificate-generator' ),
 				'default'     => 'ACG-',
 			),
-			'certificate_id_format' => array(
+			'certificate_id_format'         => array(
 				'tab'         => 'general',
 				'type'        => 'text',
 				'label'       => __( 'Certificate ID Format', 'alynt-certificate-generator' ),
 				'description' => __( 'Use {prefix} and {id} placeholders.', 'alynt-certificate-generator' ),
 				'default'     => '{prefix}{id}',
 			),
-			'delete_data_on_uninstall' => array(
+			'delete_data_on_uninstall'      => array(
 				'tab'         => 'general',
 				'type'        => 'checkbox',
 				'label'       => __( 'Delete data on uninstall', 'alynt-certificate-generator' ),
 				'description' => __( 'Remove templates and logs when the plugin is uninstalled.', 'alynt-certificate-generator' ),
 				'default'     => false,
 			),
-			'delete_files_on_uninstall' => array(
+			'delete_files_on_uninstall'     => array(
 				'tab'         => 'general',
 				'type'        => 'checkbox',
 				'label'       => __( 'Delete certificate files on uninstall', 'alynt-certificate-generator' ),
@@ -74,42 +76,42 @@ class Alynt_Certificate_Generator_Admin_Settings_Schema {
 				'default'     => 100,
 				'min'         => 1,
 			),
-			'webhook_retry_schedule' => array(
+			'webhook_retry_schedule'        => array(
 				'tab'         => 'webhooks',
 				'type'        => 'text',
 				'label'       => __( 'Retry Schedule (seconds)', 'alynt-certificate-generator' ),
 				'description' => __( 'Comma-separated retry delays, e.g. 60,300,1800,7200.', 'alynt-certificate-generator' ),
 				'default'     => '60,300,1800,7200',
 			),
-			'webhook_signature_secret' => array(
+			'webhook_signature_secret'      => array(
 				'tab'         => 'webhooks',
 				'type'        => 'text',
 				'label'       => __( 'Signature Secret', 'alynt-certificate-generator' ),
 				'description' => __( 'Secret used for HMAC verification. Leave blank to disable.', 'alynt-certificate-generator' ),
 				'default'     => '',
 			),
-			'email_from_name' => array(
+			'email_from_name'               => array(
 				'tab'         => 'email',
 				'type'        => 'text',
 				'label'       => __( 'From Name', 'alynt-certificate-generator' ),
 				'description' => __( 'Default sender name for certificate emails.', 'alynt-certificate-generator' ),
 				'default'     => \get_bloginfo( 'name' ),
 			),
-			'email_from_address' => array(
+			'email_from_address'            => array(
 				'tab'         => 'email',
 				'type'        => 'email',
 				'label'       => __( 'From Email', 'alynt-certificate-generator' ),
 				'description' => __( 'Default sender email for certificate emails.', 'alynt-certificate-generator' ),
 				'default'     => \get_bloginfo( 'admin_email' ),
 			),
-			'email_footer' => array(
+			'email_footer'                  => array(
 				'tab'         => 'email',
 				'type'        => 'textarea',
 				'label'       => __( 'Email Footer', 'alynt-certificate-generator' ),
 				'description' => __( 'Footer content appended to certificate emails.', 'alynt-certificate-generator' ),
 				'default'     => '',
 			),
-			'log_retention_days' => array(
+			'log_retention_days'            => array(
 				'tab'         => 'logs',
 				'type'        => 'number',
 				'label'       => __( 'Log Retention (days)', 'alynt-certificate-generator' ),
@@ -117,19 +119,56 @@ class Alynt_Certificate_Generator_Admin_Settings_Schema {
 				'default'     => 365,
 				'min'         => 1,
 			),
-			'enable_csv_export' => array(
+			'enable_csv_export'             => array(
 				'tab'         => 'logs',
 				'type'        => 'checkbox',
 				'label'       => __( 'Enable CSV export', 'alynt-certificate-generator' ),
 				'description' => __( 'Allow CSV export from the logs screen.', 'alynt-certificate-generator' ),
 				'default'     => true,
 			),
-			'enable_bulk_cleanup' => array(
+			'enable_bulk_cleanup'           => array(
 				'tab'         => 'logs',
 				'type'        => 'checkbox',
 				'label'       => __( 'Enable bulk cleanup tools', 'alynt-certificate-generator' ),
 				'description' => __( 'Allow bulk cleanup of logs.', 'alynt-certificate-generator' ),
 				'default'     => false,
+			),
+			'diagnostics_enabled'           => array(
+				'tab'         => 'diagnostics',
+				'type'        => 'checkbox',
+				'label'       => __( 'Enable diagnostics', 'alynt-certificate-generator' ),
+				'description' => __( 'Store redacted diagnostic events for troubleshooting. Leave disabled unless support is needed.', 'alynt-certificate-generator' ),
+				'default'     => false,
+			),
+			'diagnostics_min_level'         => array(
+				'tab'         => 'diagnostics',
+				'type'        => 'select',
+				'label'       => __( 'Minimum severity', 'alynt-certificate-generator' ),
+				'description' => __( 'Only events at this severity or higher are stored.', 'alynt-certificate-generator' ),
+				'default'     => 'warning',
+				'options'     => array(
+					'debug'    => __( 'Debug', 'alynt-certificate-generator' ),
+					'info'     => __( 'Info', 'alynt-certificate-generator' ),
+					'warning'  => __( 'Warning', 'alynt-certificate-generator' ),
+					'error'    => __( 'Error', 'alynt-certificate-generator' ),
+					'critical' => __( 'Critical', 'alynt-certificate-generator' ),
+				),
+			),
+			'diagnostics_retention_days'    => array(
+				'tab'         => 'diagnostics',
+				'type'        => 'number',
+				'label'       => __( 'Diagnostics retention days', 'alynt-certificate-generator' ),
+				'description' => __( 'Diagnostic events older than this value are purged.', 'alynt-certificate-generator' ),
+				'default'     => 14,
+				'min'         => 1,
+			),
+			'diagnostics_max_events'        => array(
+				'tab'         => 'diagnostics',
+				'type'        => 'number',
+				'label'       => __( 'Maximum stored events', 'alynt-certificate-generator' ),
+				'description' => __( 'The oldest events are discarded when this limit is reached.', 'alynt-certificate-generator' ),
+				'default'     => 200,
+				'min'         => 10,
 			),
 		);
 	}

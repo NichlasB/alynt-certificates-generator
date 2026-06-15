@@ -9,15 +9,26 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\AdminUi;
 
+defined( 'ABSPATH' ) || exit;
+
 if ( ! class_exists( '\WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 	/**
+	 * Rendering helper.
+	 *
+	 * @var Alynt_Certificate_Generator_Certificate_Log_List_Renderer
+	 */
+	private $renderer;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
+		$this->renderer = new Alynt_Certificate_Generator_Certificate_Log_List_Renderer();
+
 		parent::__construct(
 			array(
 				'singular' => 'log',
@@ -34,10 +45,16 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 		$paged    = $this->get_pagenum();
 		$offset   = ( $paged - 1 ) * $per_page;
 
-		$filters  = $this->get_filters();
-		$results  = $this->query_logs( $filters, $per_page, $offset );
+		$filters = $this->get_filters();
+		$results = $this->query_logs( $filters, $per_page, $offset );
 
-		$this->items = $results['items'];
+		$this->items           = $results['items'];
+		$this->_column_headers = array(
+			$this->get_columns(),
+			array(),
+			array(),
+			'created_at',
+		);
 
 		$this->set_pagination_args(
 			array(
@@ -54,7 +71,7 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 	 */
 	public function get_columns(): array {
 		return array(
-			'cb'             => '<input type="checkbox" />',
+			'cb'             => '<input type="checkbox" aria-label="' . esc_attr__( 'Select all certificate logs', 'alynt-certificate-generator' ) . '" />',
 			'certificate_id' => __( 'Certificate ID', 'alynt-certificate-generator' ),
 			'template'       => __( 'Template', 'alynt-certificate-generator' ),
 			'method'         => __( 'Method', 'alynt-certificate-generator' ),
@@ -85,8 +102,15 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 	 */
 	protected function column_cb( $item ): string {
 		return sprintf(
-			'<input type="checkbox" name="log_ids[]" value="%d" />',
-			(int) $item['id']
+			'<input type="checkbox" name="log_ids[]" value="%1$d" aria-label="%2$s" />',
+			(int) $item['id'],
+			esc_attr(
+				sprintf(
+					/* translators: %s: certificate ID. */
+					__( 'Select certificate log %s', 'alynt-certificate-generator' ),
+					(string) $item['certificate_id']
+				)
+			)
 		);
 	}
 
@@ -97,52 +121,10 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 	 * @return string
 	 */
 	protected function column_certificate_id( $item ): string {
-		$log_id = (int) $item['id'];
+		$log_id         = (int) $item['id'];
 		$certificate_id = esc_html( (string) $item['certificate_id'] );
 
-		$actions = array(
-			'view' => sprintf(
-				'<a href="%s">%s</a>',
-				esc_url(
-					add_query_arg(
-						array(
-							'page'   => 'alynt-certificate-logs',
-							'view'   => 'detail',
-							'log_id' => $log_id,
-						),
-						admin_url( 'admin.php' )
-					)
-				),
-				esc_html__( 'View', 'alynt-certificate-generator' )
-			),
-			'download' => sprintf(
-				'<a href="%s">%s</a>',
-				esc_url( $this->build_action_url( 'acg_download_certificate', $log_id ) ),
-				esc_html__( 'Download', 'alynt-certificate-generator' )
-			),
-			'regenerate' => sprintf(
-				'<a href="%s">%s</a>',
-				esc_url( $this->build_action_url( 'acg_regenerate_certificate', $log_id ) ),
-				esc_html__( 'Regenerate', 'alynt-certificate-generator' )
-			),
-			'resend' => sprintf(
-				'<a href="%s">%s</a>',
-				esc_url( $this->build_action_url( 'acg_resend_emails', $log_id ) ),
-				esc_html__( 'Resend Emails', 'alynt-certificate-generator' )
-			),
-			'retry' => sprintf(
-				'<a href="%s">%s</a>',
-				esc_url( $this->build_action_url( 'acg_retry_webhook', $log_id ) ),
-				esc_html__( 'Retry Webhook', 'alynt-certificate-generator' )
-			),
-			'delete' => sprintf(
-				'<a href="%s" class="submitdelete">%s</a>',
-				esc_url( $this->build_action_url( 'acg_delete_log', $log_id ) ),
-				esc_html__( 'Delete', 'alynt-certificate-generator' )
-			),
-		);
-
-		return $certificate_id . $this->row_actions( $actions );
+		return $certificate_id . $this->row_actions( $this->renderer->build_certificate_actions( $log_id ) );
 	}
 
 	/**
@@ -167,7 +149,7 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 			case 'created_at':
 				return esc_html( (string) $item['created_at'] );
 			case 'email_status':
-				return $this->format_status( (string) $item['email_status_json'] );
+				return $this->renderer->format_status( (string) $item['email_status_json'] );
 			case 'webhook_status':
 				return esc_html( (string) $item['webhook_status'] );
 			default:
@@ -185,21 +167,23 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 			return;
 		}
 
-		$filters = $this->get_filters();
+		$filters   = $this->get_filters();
 		$templates = get_posts(
 			array(
-				'post_type'      => 'acg_cert_template',
-				'post_status'    => 'any',
-				'numberposts'    => -1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'cache_results'  => false,
-				'suppress_filters' => true,
+				'post_type'              => 'acg_cert_template',
+				'post_status'            => 'any',
+				'numberposts'            => -1,
+				'fields'                 => 'ids',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'suppress_filters'       => true,
 			)
 		);
 
 		echo '<div class="alignleft actions">';
-		echo '<select name="template_id">';
+		echo '<label class="screen-reader-text" for="acg_log_filter_template">' . esc_html__( 'Filter by template', 'alynt-certificate-generator' ) . '</label>';
+		echo '<select name="template_id" id="acg_log_filter_template">';
 		echo '<option value="">' . esc_html__( 'All Templates', 'alynt-certificate-generator' ) . '</option>';
 		foreach ( $templates as $template_id ) {
 			printf(
@@ -211,10 +195,13 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 		}
 		echo '</select>';
 
-		echo '<input type="date" name="date_from" value="' . esc_attr( $filters['date_from'] ) . '" />';
-		echo '<input type="date" name="date_to" value="' . esc_attr( $filters['date_to'] ) . '" />';
+		echo '<label class="screen-reader-text" for="acg_log_filter_date_from">' . esc_html__( 'Filter from date', 'alynt-certificate-generator' ) . '</label>';
+		echo '<input type="date" id="acg_log_filter_date_from" name="date_from" value="' . esc_attr( $filters['date_from'] ) . '" />';
+		echo '<label class="screen-reader-text" for="acg_log_filter_date_to">' . esc_html__( 'Filter to date', 'alynt-certificate-generator' ) . '</label>';
+		echo '<input type="date" id="acg_log_filter_date_to" name="date_to" value="' . esc_attr( $filters['date_to'] ) . '" />';
 
-		echo '<select name="webhook_status">';
+		echo '<label class="screen-reader-text" for="acg_log_filter_webhook_status">' . esc_html__( 'Filter by webhook status', 'alynt-certificate-generator' ) . '</label>';
+		echo '<select name="webhook_status" id="acg_log_filter_webhook_status">';
 		echo '<option value="">' . esc_html__( 'All Webhook Status', 'alynt-certificate-generator' ) . '</option>';
 		foreach ( array( 'pending', 'sent', 'failed' ) as $status ) {
 			printf(
@@ -235,12 +222,14 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 	 * @return array
 	 */
 	private function get_filters(): array {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only list-table filters.
 		return array(
 			'template_id'    => isset( $_GET['template_id'] ) ? absint( wp_unslash( $_GET['template_id'] ) ) : 0,
 			'date_from'      => isset( $_GET['date_from'] ) ? sanitize_text_field( wp_unslash( $_GET['date_from'] ) ) : '',
 			'date_to'        => isset( $_GET['date_to'] ) ? sanitize_text_field( wp_unslash( $_GET['date_to'] ) ) : '',
 			'webhook_status' => isset( $_GET['webhook_status'] ) ? sanitize_key( wp_unslash( $_GET['webhook_status'] ) ) : '',
 		);
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -253,38 +242,47 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 	 */
 	private function query_logs( array $filters, int $limit, int $offset ): array {
 		global $wpdb;
-		$table = $wpdb->prefix . 'acg_certificate_log';
+		$table = esc_sql( $wpdb->prefix . 'acg_certificate_log' );
 
-		$where   = array( '1=1' );
-		$params  = array();
+		$where  = array( '1=1' );
+		$params = array();
 
 		if ( $filters['template_id'] ) {
-			$where[] = 'template_id = %d';
+			$where[]  = 'template_id = %d';
 			$params[] = $filters['template_id'];
 		}
 
 		if ( '' !== $filters['webhook_status'] ) {
-			$where[] = 'webhook_status = %s';
+			$where[]  = 'webhook_status = %s';
 			$params[] = $filters['webhook_status'];
 		}
 
 		if ( '' !== $filters['date_from'] ) {
-			$where[] = 'created_at >= %s';
+			$where[]  = 'created_at >= %s';
 			$params[] = $filters['date_from'] . ' 00:00:00';
 		}
 
 		if ( '' !== $filters['date_to'] ) {
-			$where[] = 'created_at <= %s';
+			$where[]  = 'created_at <= %s';
 			$params[] = $filters['date_to'] . ' 23:59:59';
 		}
 
 		$where_sql = implode( ' AND ', $where );
-		$params[]  = $limit;
-		$params[]  = $offset;
+		$count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}";
+		$total     = empty( $params )
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Query has no placeholders when no filters are applied; custom table name is escaped above.
+			? (int) $wpdb->get_var( $count_sql )
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- WHERE placeholders and values are assembled from a fixed allowlist.
+			: (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) );
 
-		$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table} WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d OFFSET %d";
+		$params[] = $limit;
+		$params[] = $offset;
+
+		$sql = "SELECT id, certificate_id, template_id, user_id, generated_by, method, created_at, email_status_json, webhook_status FROM {$table} WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d OFFSET %d";
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- WHERE placeholders and values are assembled from a fixed allowlist.
 		$items = $wpdb->get_results( $wpdb->prepare( $sql, $params ), ARRAY_A );
-		$total = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		$items = is_array( $items ) ? $items : array();
+		$this->prime_item_caches( $items );
 
 		return array(
 			'items' => $items,
@@ -293,43 +291,19 @@ class Alynt_Certificate_Generator_Certificate_Log_List extends \WP_List_Table {
 	}
 
 	/**
-	 * Format email status.
+	 * Prime post and user caches for list-table display labels.
 	 *
-	 * @param string $status_json Status JSON.
-	 * @return string
+	 * @param array $items Log rows.
 	 */
-	private function format_status( string $status_json ): string {
-		$decoded = json_decode( $status_json, true );
-		if ( ! is_array( $decoded ) ) {
-			return esc_html__( 'Pending', 'alynt-certificate-generator' );
+	private function prime_item_caches( array $items ): void {
+		$template_ids = array_filter( array_unique( array_map( 'intval', wp_list_pluck( $items, 'template_id' ) ) ) );
+		if ( ! empty( $template_ids ) ) {
+			_prime_post_caches( $template_ids, false, false );
 		}
 
-		$summary = array();
-		foreach ( $decoded as $status ) {
-			if ( isset( $status['status'] ) ) {
-				$summary[] = $status['status'];
-			}
+		$user_ids = array_filter( array_unique( array_map( 'intval', wp_list_pluck( $items, 'user_id' ) ) ) );
+		if ( ! empty( $user_ids ) && function_exists( 'cache_users' ) ) {
+			cache_users( $user_ids );
 		}
-
-		return esc_html( implode( ', ', array_unique( $summary ) ) );
-	}
-
-	/**
-	 * Build action URL with nonce.
-	 *
-	 * @param string $action Action.
-	 * @param int    $log_id Log ID.
-	 * @return string
-	 */
-	private function build_action_url( string $action, int $log_id ): string {
-		$url = add_query_arg(
-			array(
-				'action' => $action,
-				'log_id' => $log_id,
-			),
-			admin_url( 'admin-post.php' )
-		);
-
-		return wp_nonce_url( $url, 'acg_log_action_' . $log_id );
 	}
 }

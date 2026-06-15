@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Rest;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
@@ -38,8 +40,8 @@ class Alynt_Certificate_Generator_Font_Rest_Service {
 		$template_id = $request->get_param( 'template_id' );
 		$template_id = $template_id ? (int) $template_id : 0;
 
-		$system_fonts = $this->font_service->get_system_fonts();
-		$global_fonts = $this->font_service->get_global_fonts();
+		$system_fonts   = $this->font_service->get_system_fonts();
+		$global_fonts   = $this->font_service->get_global_fonts();
 		$template_fonts = array();
 
 		if ( $template_id > 0 ) {
@@ -50,10 +52,10 @@ class Alynt_Certificate_Generator_Font_Rest_Service {
 		$formatted_system = array();
 		foreach ( $system_fonts as $slug => $data ) {
 			$formatted_system[] = array(
-				'family'    => $data['family'],
-				'slug'      => $slug,
-				'type'      => 'system',
-				'weights'   => array_keys( array_filter( $data['weights'] ) ),
+				'family'  => $data['family'],
+				'slug'    => $slug,
+				'type'    => 'system',
+				'weights' => array_keys( array_filter( $data['weights'] ) ),
 			);
 		}
 
@@ -61,20 +63,20 @@ class Alynt_Certificate_Generator_Font_Rest_Service {
 		$formatted_global = array();
 		foreach ( $global_fonts as $slug => $data ) {
 			$formatted_global[] = array(
-				'family'    => $data['family'],
-				'slug'      => $slug,
-				'type'      => 'global',
-				'weights'   => array_keys( $data['weights'] ?? array() ),
+				'family'  => $data['family'],
+				'slug'    => $slug,
+				'type'    => 'global',
+				'weights' => array_keys( $data['weights'] ?? array() ),
 			);
 		}
 
 		$formatted_template = array();
 		foreach ( $template_fonts as $slug => $data ) {
 			$formatted_template[] = array(
-				'family'    => $data['family'],
-				'slug'      => $slug,
-				'type'      => 'template',
-				'weights'   => array_keys( $data['weights'] ?? array() ),
+				'family'  => $data['family'],
+				'slug'    => $slug,
+				'type'    => 'template',
+				'weights' => array_keys( $data['weights'] ?? array() ),
 			);
 		}
 
@@ -95,6 +97,8 @@ class Alynt_Certificate_Generator_Font_Rest_Service {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function get_global_fonts( WP_REST_Request $request ) {
+		unset( $request );
+
 		$fonts = $this->font_service->get_global_fonts();
 
 		$formatted = array();
@@ -147,7 +151,7 @@ class Alynt_Certificate_Generator_Font_Rest_Service {
 	 */
 	public function upload_font_weight( WP_REST_Request $request ) {
 		$family_slug = $request->get_param( 'family_slug' );
-		$weight = $request->get_param( 'weight' );
+		$weight      = $request->get_param( 'weight' );
 		$template_id = $request->get_param( 'template_id' );
 		$template_id = $template_id ? (int) $template_id : 0;
 
@@ -220,7 +224,7 @@ class Alynt_Certificate_Generator_Font_Rest_Service {
 	 */
 	public function delete_font_weight( WP_REST_Request $request ) {
 		$family_slug = $request->get_param( 'family_slug' );
-		$weight = $request->get_param( 'weight' );
+		$weight      = $request->get_param( 'weight' );
 		$template_id = $request->get_param( 'template_id' );
 		$template_id = $template_id ? (int) $template_id : 0;
 

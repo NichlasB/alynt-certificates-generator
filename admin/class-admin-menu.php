@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\AdminUi;
 
+defined( 'ABSPATH' ) || exit;
+
 class Alynt_Certificate_Generator_Admin_Menu {
 	/**
 	 * Plugin name.

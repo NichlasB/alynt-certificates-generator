@@ -1,6 +1,6 @@
 import { state, dom } from './state.js';
 import { getScale, getAlign, getAnchorOffsetPx, clamp01 } from './coordinates.js';
-import { enableDrag, updateOverlayPosition, updateRowPositionInputs } from './drag.js';
+import { enableDrag, enableKeyboardMove, updateOverlayPosition, updateRowPositionInputs } from './drag.js';
 
 export const applyMarkerStyles = (marker, variable) => {
   const { width, height, imgWidth, imgHeight } = getScale();
@@ -57,5 +57,6 @@ export const renderOverlay = () => {
 
     updateOverlayPosition(marker, variable);
     enableDrag(marker, variable);
+    enableKeyboardMove(marker, variable);
   });
 };

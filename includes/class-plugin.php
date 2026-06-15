@@ -9,12 +9,15 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator;
 
+defined( 'ABSPATH' ) || exit;
+
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Admin_Menu;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Admin_Notices;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Certificate_Log_Page;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Bulk_Generator_Page;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Single_Generator_Page;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Admin_Assets;
+use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Diagnostics_Page;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Email_Template_Admin;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Settings;
 use Alynt\CertificateGenerator\AdminUi\Alynt_Certificate_Generator_Template_Admin;
@@ -24,7 +27,11 @@ use Alynt\CertificateGenerator\Frontend\Alynt_Certificate_Generator_Frontend;
 use Alynt\CertificateGenerator\Rest\Alynt_Certificate_Generator_Rest_Api;
 use Alynt\CertificateGenerator\Services\Alynt_Certificate_Generator_Webhook_Dispatcher;
 use Alynt\CertificateGenerator\Services\Alynt_Certificate_Generator_Bulk_Service;
+use Alynt\CertificateGenerator\Services\Alynt_Certificate_Generator_Diagnostics_Logger;
 
+/**
+ * Wires plugin services into WordPress hooks.
+ */
 class Alynt_Certificate_Generator_Plugin {
 	/**
 	 * Plugin loader.
@@ -47,6 +54,9 @@ class Alynt_Certificate_Generator_Plugin {
 	 */
 	private $version;
 
+	/**
+	 * Build the plugin service graph and register hooks with the loader.
+	 */
 	public function __construct() {
 		// Helps diagnose cases where the bootstrap runs but the plugin core doesn't fully initialize.
 		$GLOBALS['acg_plugin_booted'] = true;
@@ -58,12 +68,35 @@ class Alynt_Certificate_Generator_Plugin {
 		Alynt_Certificate_Generator_Database::maybe_migrate();
 
 		$this->set_locale();
+		$this->define_database_hooks();
+		$this->define_diagnostics_hooks();
 		$this->define_cpt_hooks();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 		$this->define_rest_hooks();
 		$this->define_webhook_hooks();
 		$this->define_bulk_hooks();
+	}
+
+	/**
+	 * Register database lifecycle hooks.
+	 */
+	private function define_database_hooks(): void {
+		$database = new Alynt_Certificate_Generator_Database();
+
+		$this->loader->add_action( 'init', $database, 'maybe_schedule_log_cleanup' );
+		$this->loader->add_action( Alynt_Certificate_Generator_Database::CLEANUP_HOOK, $database, 'run_log_cleanup' );
+		$this->loader->add_action( 'before_delete_post', $database, 'cleanup_deleted_post', 10, 2 );
+	}
+
+	/**
+	 * Register diagnostics lifecycle hooks.
+	 */
+	private function define_diagnostics_hooks(): void {
+		$diagnostics = new Alynt_Certificate_Generator_Diagnostics_Logger();
+
+		$this->loader->add_action( 'init', $diagnostics, 'maybe_schedule_cleanup' );
+		$this->loader->add_action( Alynt_Certificate_Generator_Diagnostics_Logger::CLEANUP_HOOK, $diagnostics, 'run_cleanup' );
 	}
 
 	/**
@@ -91,12 +124,14 @@ class Alynt_Certificate_Generator_Plugin {
 		$bulk_page      = new Alynt_Certificate_Generator_Bulk_Generator_Page();
 		$single_page    = new Alynt_Certificate_Generator_Single_Generator_Page();
 		$admin_assets   = new Alynt_Certificate_Generator_Admin_Assets();
+		$diagnostics    = new Alynt_Certificate_Generator_Diagnostics_Page();
 
 		$this->loader->add_action( 'admin_menu', $admin_menu, 'register_menu' );
 		$this->loader->add_action( 'admin_init', $settings, 'register' );
 		$this->loader->add_action( 'admin_init', $log_page, 'register_actions' );
 		$this->loader->add_action( 'admin_init', $bulk_page, 'register_actions' );
 		$this->loader->add_action( 'admin_init', $single_page, 'register_actions' );
+		$this->loader->add_action( 'admin_init', $diagnostics, 'register_actions' );
 		$this->loader->add_action( 'add_meta_boxes', $template_admin, 'register_metaboxes' );
 		$this->loader->add_action( 'save_post_acg_cert_template', $template_admin, 'save_template_meta' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $template_admin, 'enqueue_assets' );

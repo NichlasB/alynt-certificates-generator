@@ -1,0 +1,1766 @@
+﻿msgid ""
+msgstr ""
+"Project-Id-Version: Alynt Certificate Generator 0.2.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/alynt-certificate-generator\n"
+"POT-Creation-Date: 2026-06-15 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: local fallback extractor\n"
+
+#: admin/class-single-generator-page-renderer.php:253 public/class-frontend.php:98
+msgid "â€” Select â€”"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:75
+msgid "â€” Select a template â€”"
+msgstr ""
+
+#: admin/class-template-admin.php:199
+msgid "(%d option)"
+msgstr ""
+
+#: admin/class-template-admin.php:197
+msgid "(%d options)"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:190
+msgid "%d global font(s) available."
+msgstr ""
+
+#: admin/class-template-admin.php:215
+msgid "%s is required"
+msgstr ""
+
+#: admin/class-template-admin.php:169
+msgid "+ Add Option"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:185
+msgid "Accepted formats: JPG, PNG (max 5MB)"
+msgstr ""
+
+#: includes/Rest/class-bulk-service.php:27
+msgid "Access denied."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:111 admin/class-template-metabox-renderer.php:79
+msgid "Actions"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:100 includes/Cpt/class-cpt-manager.php:43
+msgid "Add New"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:101
+msgid "Add New Email Template"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:67
+msgid "Add New Font Family"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:44
+msgid "Add New Template"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:65
+msgid "Add Variable"
+msgstr ""
+
+#: admin/class-template-admin.php:170
+msgid "Align"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:180
+msgid "All Templates"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:198
+msgid "All Webhook Status"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:133
+msgid "Allow bulk cleanup of logs."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:126
+msgid "Allow CSV export from the logs screen."
+msgstr ""
+
+#: admin/class-settings.php:106 admin/partials/settings-page.php:13
+msgid "Alynt Certificate Generator"
+msgstr ""
+
+#: alynt-certificate-generator.php:43
+msgid "Alynt Certificate Generator requires Composer dependencies. Run composer install."
+msgstr ""
+
+#: alynt-certificate-generator.php:88 includes/class-activator.php:32
+msgid "Alynt Certificate Generator requires PHP 7.4 or higher."
+msgstr ""
+
+#: alynt-certificate-generator.php:102
+msgid "Alynt Certificate Generator requires the GD extension to be enabled."
+msgstr ""
+
+#: includes/class-activator.php:46
+msgid "Alynt Certificate Generator requires the GD extension."
+msgstr ""
+
+#: alynt-certificate-generator.php:95 includes/class-activator.php:39
+msgid "Alynt Certificate Generator requires WordPress 6.0 or higher."
+msgstr ""
+
+#: admin/class-admin-menu.php:39
+msgid "Alynt Certificates"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:100
+msgid "Any logged-in user"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:155
+msgid "API Key"
+msgstr ""
+
+#: admin/class-certificate-log-list-renderer.php:44
+msgid "Are you sure you want to delete this certificate log and its PDF?"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:249
+msgid "Are you sure you want to delete this entire font family and all its weights?"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:197
+msgid "Are you sure you want to delete this font weight?"
+msgstr ""
+
+#: admin/class-email-template-admin.php:93
+msgid "Attach generated PDF"
+msgstr ""
+
+#: includes/Rest/class-webhook-service.php:65
+msgid "Authentication failed."
+msgstr ""
+
+#: admin/class-template-admin.php:174 admin/class-template-admin.php:218
+msgid "Auto"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:220
+msgid "Auto-generated: Certificate ID"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:211
+msgid "Auto-generated: Generation date"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:118
+msgid "Automatically purge logs older than this value."
+msgstr ""
+
+#: admin/class-template-admin.php:177
+msgid "B"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:61
+msgid "Back to Logs"
+msgstr ""
+
+#: admin/class-email-template-admin.php:80
+msgid "Body"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:54
+msgid "Bulk Certificate Generation"
+msgstr ""
+
+#: admin/class-admin-menu.php:60
+msgid "Bulk Generate"
+msgstr ""
+
+#: admin/class-admin-menu.php:59
+msgid "Bulk Generation"
+msgstr ""
+
+#: admin/class-admin-assets.php:55
+msgid "Bulk generation complete."
+msgstr ""
+
+#: includes/Rest/class-bulk-service.php:32
+msgid "Bulk ID missing."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:256
+msgid "Bulk job not found."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:320 admin/class-bulk-generator-page.php:328
+msgid "Bulk row could not be scheduled."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:300
+msgid "Bulk rows could not be scheduled for processing."
+msgstr ""
+
+#: admin/class-admin-assets.php:57
+msgid "Bulk status could not be loaded."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:122
+msgid "Bulk upload not found. Please upload a CSV."
+msgstr ""
+
+#: includes/Services/class-font-converter.php:128
+msgid "Cannot copy font file."
+msgstr ""
+
+#: includes/Services/class-font-converter.php:101
+msgid "Cannot create fonts directory."
+msgstr ""
+
+#: includes/Services/class-font-validator.php:145
+msgid "Cannot parse font offset table."
+msgstr ""
+
+#: includes/Services/class-font-validator.php:110 includes/Services/class-font-validator.php:132
+msgid "Cannot read font file."
+msgstr ""
+
+#: admin/class-template-admin.php:171
+msgid "Center"
+msgstr ""
+
+#: public/class-frontend.php:158
+msgid "Certificate"
+msgstr ""
+
+#: admin/class-single-generator-page.php:68
+msgid "Certificate %s generated successfully."
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:112
+msgid "Certificate Details"
+msgstr ""
+
+#: includes/Services/class-download-service.php:54
+msgid "Certificate file could not be read."
+msgstr ""
+
+#: includes/Services/class-download-service.php:51
+msgid "Certificate file not found."
+msgstr ""
+
+#: public/class-frontend.php:283
+msgid "Certificate generated successfully."
+msgstr ""
+
+#: admin/class-certificate-log-list.php:69 admin/class-certificate-log-page-renderer.php:66 admin/class-template-admin.php:175
+msgid "Certificate ID"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:53
+msgid "Certificate ID Format"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:46
+msgid "Certificate ID Prefix"
+msgstr ""
+
+#: includes/Database/class-certificate-log.php:140
+msgid "Certificate log could not be deleted."
+msgstr ""
+
+#: includes/Database/class-certificate-log.php:29
+msgid "Certificate log could not be saved."
+msgstr ""
+
+#: includes/Database/class-certificate-log.php:121
+msgid "Certificate log could not be updated."
+msgstr ""
+
+#: admin/class-certificate-log-page.php:235
+msgid "Certificate log deleted."
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:60
+msgid "Certificate Log Detail"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:64
+msgid "Certificate log details"
+msgstr ""
+
+#: admin/class-admin-menu.php:68 admin/class-certificate-log-page-renderer.php:25
+msgid "Certificate Logs"
+msgstr ""
+
+#: admin/class-certificate-log-page.php:308
+msgid "Certificate PDF could not be deleted."
+msgstr ""
+
+#: includes/Services/class-pdf-service.php:162 includes/Services/class-pdf-service.php:167
+msgid "Certificate PDF could not be saved."
+msgstr ""
+
+#: admin/class-certificate-log-page.php:169
+msgid "Certificate regenerated successfully."
+msgstr ""
+
+#: includes/Services/class-certificate-service.php:106
+msgid "Certificate storage directory is not writable."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:90 admin/class-email-template-admin.php:56 admin/class-single-generator-page-renderer.php:72 includes/Cpt/class-cpt-manager.php:42
+msgid "Certificate Template"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:41 includes/Cpt/class-cpt-manager.php:51
+msgid "Certificate Templates"
+msgstr ""
+
+#: admin/class-admin-menu.php:40
+msgid "Certificates"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:97
+msgid "Choose who can access the frontend form for this template."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:269
+msgid "Click \"Download family\" to get the font files (TTF format)."
+msgstr ""
+
+#: admin/class-template-admin.php:178
+msgid "Color"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:83
+msgid "Comma-separated retry delays, e.g. 60,300,1800,7200."
+msgstr ""
+
+#: admin/Tabs/class-tab-general.php:24
+msgid "Core configuration for certificates and storage."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:270
+msgid "Create a font family above with the same name (e.g., \"Roboto\")."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:76
+msgid "Create Font Family"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:45
+msgid "Create Template"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:71
+msgid "Created At"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:141
+msgid "CSV Column"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:158
+msgid "CSV column for %s"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:102
+msgid "CSV File"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:217
+msgid "CSV file is required."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:128
+msgid "CSV headers could not be read."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:267
+msgid "CSV rows could not be read. Check that the file contains a header row and at least one data row."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:43 admin/class-template-admin.php:94
+msgid "Custom Fonts"
+msgstr ""
+
+#: admin/class-template-admin.php:179
+msgid "Custom Fonts (Global)"
+msgstr ""
+
+#: admin/class-template-admin.php:180
+msgid "Custom Fonts (Template)"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:26
+msgid "Custom upload subdirectory or leave blank for default."
+msgstr ""
+
+#: admin/class-certificate-log-list.php:73 admin/class-template-admin.php:219 public/class-frontend.php:159
+msgid "Date"
+msgstr ""
+
+#: admin/class-template-admin.php:181 includes/Admin/Settings/class-admin-settings-schema.php:40
+msgid "DD Month YYYY"
+msgstr ""
+
+#: admin/class-template-admin.php:182 includes/Admin/Settings/class-admin-settings-schema.php:38
+msgid "DD/MM/YYYY"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:32
+msgid "Default Date Format"
+msgstr ""
+
+#: admin/Tabs/class-tab-email.php:24
+msgid "Default email sender details and footer content."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:104
+msgid "Default sender email for certificate emails."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:97
+msgid "Default sender name for certificate emails."
+msgstr ""
+
+#: admin/class-certificate-log-list-renderer.php:45 admin/class-certificate-log-list.php:86 admin/class-fonts-settings-page-renderer.php:203
+msgid "Delete"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:67
+msgid "Delete certificate files on uninstall"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:60
+msgid "Delete data on uninstall"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:254
+msgid "Delete Entire Font Family"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:76
+msgid "Display"
+msgstr ""
+
+#: admin/class-template-admin.php:213
+msgid "Display %s on certificate"
+msgstr ""
+
+#: admin/class-certificate-log-list-renderer.php:37 public/class-frontend.php:160 public/class-frontend.php:174
+msgid "Download"
+msgstr ""
+
+#: admin/class-single-generator-page.php:71 public/class-frontend.php:285
+msgid "Download PDF"
+msgstr ""
+
+#: includes/Services/class-download-service.php:41
+msgid "Download token missing."
+msgstr ""
+
+#: admin/class-template-admin.php:186
+msgid "Drag to reorder"
+msgstr ""
+
+#: admin/class-template-admin.php:187
+msgid "Dropdown Options:"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:221
+msgid "e.g., Roboto"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:73
+msgid "e.g., Roboto, Open Sans"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:274
+msgid "Each font weight is a separate file. For example, Roboto-Regular.ttf, Roboto-Bold.ttf, etc."
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:102
+msgid "Edit Email Template"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:117 includes/Cpt/class-cpt-manager.php:45
+msgid "Edit Template"
+msgstr ""
+
+#: admin/Tabs/class-tab-email.php:20 admin/class-certificate-log-list.php:74
+msgid "Email"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:110
+msgid "Email Footer"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:72
+msgid "Email Status"
+msgstr ""
+
+#: includes/Database/class-certificate-log.php:164
+msgid "Email status could not be saved."
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:99
+msgid "Email Template"
+msgstr ""
+
+#: admin/class-email-template-admin.php:21
+msgid "Email Template Settings"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:108 includes/Cpt/class-cpt-manager.php:98
+msgid "Email Templates"
+msgstr ""
+
+#: admin/class-certificate-log-page.php:184
+msgid "Emails resent successfully."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:132
+msgid "Enable bulk cleanup tools"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:125
+msgid "Enable CSV export"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:172
+msgid "Enable outgoing webhook"
+msgstr ""
+
+#: admin/class-email-template-admin.php:71
+msgid "Enable this email template"
+msgstr ""
+
+#: includes/Admin/Render/class-field-renderer.php:44
+msgid "Enabled"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:33
+msgid "Export CSV"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:196
+msgid "Failed:"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:220
+msgid "Family Name:"
+msgstr ""
+
+#: includes/Rest/class-font-rest-service.php:157 includes/Rest/class-font-rest-service.php:230
+msgid "Family slug and weight are required."
+msgstr ""
+
+#: includes/Services/class-font-service.php:122
+msgid "File upload failed."
+msgstr ""
+
+#: admin/class-certificate-log-list.php:208
+msgid "Filter"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:178
+msgid "Filter by template"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:196
+msgid "Filter by webhook status"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:191
+msgid "Filter from date"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:193
+msgid "Filter to date"
+msgstr ""
+
+#: admin/class-template-admin.php:188
+msgid "Font"
+msgstr ""
+
+#: includes/Services/class-font-converter.php:164
+msgid "Font conversion failed."
+msgstr ""
+
+#: includes/Services/class-font-service.php:334
+msgid "Font family already exists."
+msgstr ""
+
+#: admin/class-fonts-settings-page.php:217
+msgid "Font family and file are required."
+msgstr ""
+
+#: admin/class-fonts-settings-page.php:201
+msgid "Font family created successfully."
+msgstr ""
+
+#: admin/class-fonts-settings-page.php:271
+msgid "Font family deleted successfully."
+msgstr ""
+
+#: admin/class-fonts-settings-page.php:104
+msgid "Font family is required."
+msgstr ""
+
+#: admin/class-fonts-settings-page.php:79 includes/Rest/class-font-rest-service.php:126
+msgid "Font family name is required."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:72
+msgid "Font Family Name:"
+msgstr ""
+
+#: includes/Rest/class-font-rest-service.php:174 includes/Services/class-font-service.php:253 includes/Services/class-font-service.php:267
+msgid "Font family not found."
+msgstr ""
+
+#: includes/Rest/class-font-rest-service.php:205
+msgid "Font family slug is required."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:236
+msgid "Font File (TTF/OTF):"
+msgstr ""
+
+#: includes/Services/class-font-validator.php:64
+msgid "Font file exceeds 10MB limit."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:227
+msgid "Font file for %1$s %2$s"
+msgstr ""
+
+#: includes/Rest/class-font-rest-service.php:163
+msgid "Font file is required."
+msgstr ""
+
+#: includes/Services/class-font-validator.php:58
+msgid "Font file not found."
+msgstr ""
+
+#: admin/class-fonts-settings-page.php:252
+msgid "Font weight deleted successfully."
+msgstr ""
+
+#: includes/Services/class-font-service.php:270
+msgid "Font weight not found."
+msgstr ""
+
+#: admin/class-fonts-settings-page.php:232
+msgid "Font weight uploaded successfully."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:103
+msgid "Font weights for %s"
+msgstr ""
+
+#: admin/Tabs/class-tab-fonts.php:20
+msgid "Fonts"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:111
+msgid "Footer content appended to certificate emails."
+msgstr ""
+
+#: admin/class-template-admin.php:76
+msgid "Form Access"
+msgstr ""
+
+#: admin/class-template-admin.php:189
+msgid "Format"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:214
+msgid "Format: %s"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:103
+msgid "From Email"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:96
+msgid "From Name"
+msgstr ""
+
+#: admin/Tabs/class-tab-general.php:20
+msgid "General"
+msgstr ""
+
+#: admin/class-admin-menu.php:51
+msgid "Generate"
+msgstr ""
+
+#: admin/class-admin-menu.php:50 admin/class-single-generator-page-renderer.php:142 admin/class-single-generator-page-renderer.php:32 public/class-frontend.php:116
+msgid "Generate Certificate"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:69
+msgid "Generated By"
+msgstr ""
+
+#: admin/class-template-admin.php:176
+msgid "Generation Date"
+msgstr ""
+
+#: admin/Tabs/class-tab-webhooks.php:24
+msgid "Global webhook settings and retry defaults."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:266
+msgid "How to Use Custom Fonts"
+msgstr ""
+
+#: admin/class-template-admin.php:228
+msgid "I"
+msgstr ""
+
+#: admin/class-template-admin.php:220
+msgid "Image"
+msgstr ""
+
+#: admin/class-single-generator-page.php:186 public/class-frontend.php:306
+msgid "Image upload failed."
+msgstr ""
+
+#: admin/class-single-generator-page.php:191 public/class-frontend.php:311
+msgid "Image uploads must be 5MB or smaller."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:152
+msgid "Incoming Webhook URL"
+msgstr ""
+
+#: includes/Services/class-download-service.php:46
+msgid "Invalid download token."
+msgstr ""
+
+#: includes/Services/class-font-service.php:126
+msgid "Invalid file upload."
+msgstr ""
+
+#: includes/Services/class-font-service.php:138 includes/Services/class-font-service.php:330
+msgid "Invalid font family name."
+msgstr ""
+
+#: includes/Services/class-font-validator.php:117
+msgid "Invalid font file format. Only TTF and OTF files are supported."
+msgstr ""
+
+#: includes/Services/class-font-validator.php:139
+msgid "Invalid font file structure."
+msgstr ""
+
+#: includes/Services/class-font-converter.php:114
+msgid "Invalid font weight."
+msgstr ""
+
+#: includes/Rest/class-webhook-service.php:94
+msgid "Invalid payload."
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:70
+msgid "IP Address"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:73
+msgid "Key"
+msgstr ""
+
+#: admin/class-template-admin.php:195
+msgid "Key for %s"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:72
+msgid "Label"
+msgstr ""
+
+#: admin/class-template-admin.php:193
+msgid "Label for %s"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:37
+msgid "Landscape"
+msgstr ""
+
+#: admin/class-template-meta-manager.php:321
+msgid "Landscape templates must be at least 1000x800 pixels."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:163
+msgid "Leave 0 to use the global rate limit."
+msgstr ""
+
+#: admin/class-template-admin.php:172
+msgid "Left"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:47 admin/class-certificate-log-page.php:123 admin/class-certificate-log-page.php:143 admin/class-certificate-log-page.php:195 admin/class-certificate-log-page.php:303 admin/class-certificate-log-page.php:323
+msgid "Log entry not found."
+msgstr ""
+
+#: admin/class-certificate-log-page.php:346
+msgid "Log ID missing."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:117
+msgid "Log Retention (days)"
+msgstr ""
+
+#: admin/Tabs/class-tab-logs.php:20 admin/class-admin-menu.php:69
+msgid "Logs"
+msgstr ""
+
+#: admin/Tabs/class-tab-fonts.php:24
+msgid "Manage custom fonts for certificate templates. Upload TTF or OTF font files downloaded from Google Fonts or other sources."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:194
+msgid "Manage Global Fonts"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:140
+msgid "Map template variables to CSV columns"
+msgstr ""
+
+#: admin/class-template-admin.php:190
+msgid "Max H"
+msgstr ""
+
+#: admin/class-template-admin.php:191
+msgid "Max W"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:75
+msgid "Maximum incoming webhook requests per minute."
+msgstr ""
+
+#: admin/class-certificate-log-list.php:71 admin/class-certificate-log-page-renderer.php:68
+msgid "Method"
+msgstr ""
+
+#: includes/Services/class-certificate-variable-resolver.php:66
+msgid "Missing required fields: %s"
+msgstr ""
+
+#: admin/class-template-admin.php:185 includes/Admin/Settings/class-admin-settings-schema.php:37
+msgid "MM/DD/YYYY"
+msgstr ""
+
+#: admin/class-template-admin.php:183 includes/Admin/Settings/class-admin-settings-schema.php:39
+msgid "Month DD, YYYY"
+msgstr ""
+
+#: public/class-frontend.php:156
+msgid "My certificates"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:103
+msgid "New Email Template"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:46
+msgid "New Template"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:44
+msgid "No certificate templates found. Please create a template first."
+msgstr ""
+
+#: public/class-frontend.php:152
+msgid "No certificates found."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:49
+msgid "No custom fonts have been uploaded yet. Create a font family above to get started."
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:106
+msgid "No email templates found"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:107
+msgid "No email templates found in trash"
+msgstr ""
+
+#: admin/class-settings.php:133
+msgid "No SMTP plugin detected. For reliable delivery, install and configure an SMTP plugin."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:213
+msgid "No template-specific fonts uploaded."
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:49
+msgid "No templates found"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:50
+msgid "No templates found in trash"
+msgstr ""
+
+#: public/class-frontend.php:62
+msgid "No variables configured for this template."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:167
+msgid "Not uploaded"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:274
+msgid "Note:"
+msgstr ""
+
+#: includes/Services/class-font-validator.php:86
+msgid "Only TTF and OTF files are allowed."
+msgstr ""
+
+#: admin/class-template-admin.php:200
+msgid "Option text (shown in dropdown and on certificate)"
+msgstr ""
+
+#: admin/class-template-admin.php:204
+msgid "Option: %d (edit below)"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:133
+msgid "Options"
+msgstr ""
+
+#: admin/class-template-admin.php:202
+msgid "Options: %d (edit below)"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:34
+msgid "Orientation"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:166
+msgid "Outgoing Webhook"
+msgstr ""
+
+#: includes/Services/class-webhook-dispatcher.php:193
+msgid "Outgoing webhook failed for log #%1$d. URL: %2$s"
+msgstr ""
+
+#: admin/class-certificate-log-page.php:200
+msgid "Outgoing webhook not configured."
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:74
+msgid "PDF Path"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:25
+msgid "PDF Storage Path"
+msgstr ""
+
+#: admin/class-certificate-log-list-renderer.php:59
+msgid "Pending"
+msgstr ""
+
+#: admin/class-single-generator-page.php:251
+msgid "Permission denied."
+msgstr ""
+
+#: public/class-frontend.php:129
+msgid "Please log in to view your certificates."
+msgstr ""
+
+#: includes/class-activator.php:33 includes/class-activator.php:40 includes/class-activator.php:47
+msgid "Plugin activation failed"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:38
+msgid "Portrait"
+msgstr ""
+
+#: admin/class-template-meta-manager.php:315
+msgid "Portrait templates must be at least 800x1000 pixels."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:78
+msgid "Position"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:47
+msgid "Prefix applied to generated certificate IDs."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:110
+msgid "Preview"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:195
+msgid "Processed:"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:194
+msgid "Processing bulk generation..."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:217
+msgid "Quick Upload"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:74
+msgid "Rate Limit (per minute)"
+msgstr ""
+
+#: includes/Rest/class-webhook-service.php:84
+msgid "Rate limit exceeded."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:161
+msgid "Rate Limit Override (per minute)"
+msgstr ""
+
+#: admin/class-certificate-log-list-renderer.php:38
+msgid "Regenerate"
+msgstr ""
+
+#: admin/class-template-admin.php:205
+msgid "Remove"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:68
+msgid "Remove generated PDFs when the plugin is uninstalled."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:61
+msgid "Remove templates and logs when the plugin is uninstalled."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:71
+msgid "Reorder"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:169
+msgid "required"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:75
+msgid "Required"
+msgstr ""
+
+#: admin/class-single-generator-page.php:131 public/class-frontend.php:258
+msgid "Required fields must be completed."
+msgstr ""
+
+#: admin/class-single-generator-page.php:179 public/class-frontend.php:299
+msgid "Required image fields must be completed."
+msgstr ""
+
+#: admin/class-certificate-log-list-renderer.php:39 admin/class-certificate-log-list.php:87
+msgid "Resend Emails"
+msgstr ""
+
+#: admin/Tabs/class-tab-logs.php:24
+msgid "Retention and export options for logs."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:82
+msgid "Retry Schedule (seconds)"
+msgstr ""
+
+#: admin/class-certificate-log-list-renderer.php:40
+msgid "Retry Webhook"
+msgstr ""
+
+#: admin/class-template-admin.php:173
+msgid "Right"
+msgstr ""
+
+#: admin/class-template-admin.php:208
+msgid "Saving template variables..."
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:105
+msgid "Search Email Templates"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:48
+msgid "Search Templates"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:90
+msgid "Secret used for HMAC verification. Leave blank to disable."
+msgstr ""
+
+#: public/class-frontend.php:236
+msgid "Security check failed."
+msgstr ""
+
+#: admin/class-fonts-settings-page.php:70
+msgid "Security check failed. Please try again."
+msgstr ""
+
+#: admin/class-template-admin.php:221
+msgid "Select"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:92 admin/class-email-template-admin.php:58
+msgid "Select a template"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:60
+msgid "Select a template image to start positioning variables."
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:91
+msgid "Select a template to see its variables and generate a certificate."
+msgstr ""
+
+#: admin/class-certificate-log-list.php:68
+msgid "Select all certificate logs"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:104
+msgid "Select certificate log %s"
+msgstr ""
+
+#: admin/class-template-admin.php:206
+msgid "Select certificate template"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:27
+msgid "Select Image"
+msgstr ""
+
+#: admin/class-template-meta-manager.php:272
+msgid "Selected image file not found."
+msgstr ""
+
+#: admin/class-admin-menu.php:78 admin/class-admin-menu.php:79
+msgid "Settings"
+msgstr ""
+
+#: admin/partials/settings-page.php:14
+msgid "Settings UI will be available after initial setup."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:89
+msgid "Signature Secret"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:158
+msgid "Signature Secret (optional)"
+msgstr ""
+
+#: includes/Rest/class-webhook-service.php:75
+msgid "Signature verification failed."
+msgstr ""
+
+#: admin/class-template-admin.php:209
+msgid "Size"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:163
+msgid "Skip"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:107 admin/class-bulk-generator-page.php:180
+msgid "Skip email notifications for this bulk job"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:136 public/class-frontend.php:114
+msgid "Skip email notifications for this certificate"
+msgstr ""
+
+#: admin/class-admin-assets.php:56
+msgid "Some rows could not be scheduled."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:101
+msgid "Specific roles"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:183
+msgid "Start Bulk Generation"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:109
+msgid "Status"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:77
+msgid "Style"
+msgstr ""
+
+#: admin/class-email-template-admin.php:77
+msgid "Subject"
+msgstr ""
+
+#: admin/class-template-admin.php:210
+msgid "System Fonts"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:70 admin/class-certificate-log-page-renderer.php:67
+msgid "Template"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:80
+msgid "Template #%d"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:98
+msgid "Template form access"
+msgstr ""
+
+#: includes/Services/class-email-service.php:40
+msgid "Template ID missing for email dispatch."
+msgstr ""
+
+#: admin/class-single-generator-page.php:256
+msgid "Template ID required."
+msgstr ""
+
+#: admin/class-template-admin.php:58
+msgid "Template Image"
+msgstr ""
+
+#: includes/Services/class-pdf-image-compositor.php:55
+msgid "Template image could not be loaded."
+msgstr ""
+
+#: admin/class-template-meta-manager.php:300
+msgid "Template image dimensions could not be read."
+msgstr ""
+
+#: admin/class-template-meta-manager.php:289
+msgid "Template image exceeds the 5MB size limit."
+msgstr ""
+
+#: admin/class-template-meta-manager.php:307
+msgid "Template image exceeds the 6000x6000 maximum resolution."
+msgstr ""
+
+#: includes/Services/class-pdf-image-compositor.php:50
+msgid "Template image format not supported."
+msgstr ""
+
+#: includes/Services/class-pdf-image-compositor.php:46
+msgid "Template image is invalid."
+msgstr ""
+
+#: includes/Services/class-certificate-service.php:88
+msgid "Template image is missing."
+msgstr ""
+
+#: admin/class-template-meta-manager.php:281
+msgid "Template image must be a JPG or PNG file."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:213 admin/class-single-generator-page.php:98
+msgid "Template is required."
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:107 admin/class-single-generator-page.php:105 includes/Rest/class-template-service.php:32 includes/Rest/class-webhook-service.php:53 includes/Services/class-certificate-service.php:82
+msgid "Template not found."
+msgstr ""
+
+#: public/class-frontend.php:53
+msgid "Template not specified."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:35
+msgid "Template orientation"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:69
+msgid "Template variables"
+msgstr ""
+
+#: admin/class-template-admin.php:207 includes/Rest/class-template-service.php:54
+msgid "Template variables could not be saved."
+msgstr ""
+
+#: admin/class-template-admin.php:211
+msgid "Template variables saved."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:199
+msgid "Template-Specific Fonts"
+msgstr ""
+
+#: includes/Services/class-pdf-image-compositor.php:117
+msgid "Temporary file could not be created."
+msgstr ""
+
+#: includes/Services/class-pdf-image-compositor.php:123
+msgid "Temporary image could not be saved."
+msgstr ""
+
+#: admin/class-template-admin.php:222
+msgid "Text"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:241
+msgid "The font will be uploaded when you save/update the template."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:272
+msgid "The font will now appear in the template builder font dropdown."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:184
+msgid "The quick brown fox jumps over the lazy dog"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:116
+msgid "This template has no variables configured."
+msgstr ""
+
+#: admin/class-email-template-admin.php:74
+msgid "To (supports variables like {email})"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:197
+msgid "Total:"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:74
+msgid "Type"
+msgstr ""
+
+#: admin/class-template-admin.php:217
+msgid "Type for %s"
+msgstr ""
+
+#: admin/class-certificate-log-list.php:140
+msgid "Unknown"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:236
+msgid "Upload"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:25
+msgid "Upload a JPG or PNG (max 5MB, 1000x800 to 6000x6000)."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:110
+msgid "Upload CSV"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:44
+msgid "Upload custom TTF or OTF fonts to use in your certificate templates. Download fonts from Google Fonts or other sources."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:271
+msgid "Upload each weight variant (Regular, Bold, Italic, Bold Italic) as needed."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:200
+msgid "Upload fonts that are only available for this template."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:162
+msgid "Uploaded"
+msgstr ""
+
+#: admin/class-single-generator-page.php:222 public/class-frontend.php:342
+msgid "Uploaded image could not be saved."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:54
+msgid "Use {prefix} and {id} placeholders."
+msgstr ""
+
+#: admin/class-template-admin.php:223
+msgid "Use this image"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:33
+msgid "Used for date fields and generation dates."
+msgstr ""
+
+#: admin/class-certificate-log-list.php:72
+msgid "User"
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:141
+msgid "Variable"
+msgstr ""
+
+#: admin/class-template-admin.php:225
+msgid "Variable %d"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:79
+msgid "Variables"
+msgstr ""
+
+#: admin/class-template-admin.php:67
+msgid "Variables & Preview"
+msgstr ""
+
+#: admin/class-certificate-log-page.php:154 admin/class-certificate-log-page.php:205 admin/class-certificate-log-page.php:328
+msgid "Variables not found for this log entry."
+msgstr ""
+
+#: includes/Rest/class-template-service.php:45
+msgid "Variables payload is invalid."
+msgstr ""
+
+#: admin/class-certificate-log-list-renderer.php:35
+msgid "View"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:104
+msgid "View Email Template"
+msgstr ""
+
+#: includes/Cpt/class-cpt-manager.php:47
+msgid "View Template"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:268
+msgid "Visit Google Fonts (fonts.google.com) and find a font you like."
+msgstr ""
+
+#: admin/class-certificate-log-list.php:75
+msgid "Webhook"
+msgstr ""
+
+#: includes/Services/class-webhook-dispatcher.php:57 includes/Services/class-webhook-dispatcher.php:65
+msgid "Webhook could not be scheduled."
+msgstr ""
+
+#: includes/Database/class-webhook-log.php:29
+msgid "Webhook log could not be saved."
+msgstr ""
+
+#: includes/Rest/class-webhook-service.php:59
+msgid "Webhook not configured."
+msgstr ""
+
+#. translators: %d: maximum webhook batch size.
+#: includes/Rest/class-webhook-service.php:111
+msgid "Webhook payloads may contain no more than %d items."
+msgstr ""
+
+#: includes/Services/class-webhook-dispatcher.php:147 includes/Services/class-webhook-dispatcher.php:155
+msgid "Webhook retry could not be scheduled."
+msgstr ""
+
+#: admin/class-certificate-log-page.php:220
+msgid "Webhook retry scheduled."
+msgstr ""
+
+#: admin/class-template-admin.php:85
+msgid "Webhook Settings"
+msgstr ""
+
+#: admin/class-certificate-log-page-renderer.php:73
+msgid "Webhook Status"
+msgstr ""
+
+#: includes/Database/class-certificate-log.php:188
+msgid "Webhook status could not be saved."
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:167
+msgid "Webhook URL"
+msgstr ""
+
+#: includes/Services/class-webhook-dispatcher.php:50
+msgid "Webhook URL is missing."
+msgstr ""
+
+#: admin/Tabs/class-tab-webhooks.php:20
+msgid "Webhooks"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:108
+msgid "Weight"
+msgstr ""
+
+#: admin/class-template-metabox-renderer.php:226
+msgid "Weight:"
+msgstr ""
+
+#: admin/class-single-generator-page-renderer.php:236
+msgid "Will be formatted as: %s"
+msgstr ""
+
+#: admin/class-template-admin.php:226
+msgid "X:"
+msgstr ""
+
+#: admin/class-template-admin.php:227
+msgid "Y:"
+msgstr ""
+
+#: public/class-frontend.php:57
+msgid "You do not have access to this certificate form."
+msgstr ""
+
+#: admin/class-admin-menu.php:92 admin/class-bulk-generator-page.php:47 admin/class-certificate-log-page.php:96 admin/class-settings.php:99 admin/class-single-generator-page.php:41
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: admin/class-certificate-log-exporter.php:20
+msgid "You do not have permission to export logs."
+msgstr ""
+
+#: admin/class-single-generator-page.php:93
+msgid "You do not have permission to generate certificates."
+msgstr ""
+
+#: admin/class-certificate-log-page.php:342
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:248
+msgid "You do not have permission to start bulk processing."
+msgstr ""
+
+#: admin/class-bulk-generator-page.php:206
+msgid "You do not have permission to upload CSV files."
+msgstr ""
+
+#: admin/class-template-admin.php:184 includes/Admin/Settings/class-admin-settings-schema.php:36
+msgid "YYYY-MM-DD"
+msgstr ""
+
+#: admin/Tabs/class-tab-diagnostics.php:24
+msgid "Admin-only diagnostic logging for support and troubleshooting. Sensitive values are redacted before storage."
+msgstr ""
+
+#: admin/class-diagnostics-page.php:178
+msgid "All levels"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:183 admin/class-diagnostics-page.php:215
+msgid "Category"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:128
+msgid "Cleanup scheduled"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:159
+msgid "Clear all stored diagnostic events?"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:162
+msgid "Clear diagnostics"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:216
+msgid "Code"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:218
+msgid "Context"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:154
+msgid "Critical"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:150
+msgid "Debug"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:161
+msgid "Diagnostic events older than this value are purged."
+msgstr ""
+
+#: admin/Tabs/class-tab-diagnostics.php:20
+msgid "Diagnostics"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:122
+msgid "Diagnostics enabled"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:160
+msgid "Diagnostics retention days"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:107
+msgid "Diagnostics were cleared."
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:139
+msgid "Enable diagnostics"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:153
+msgid "Error"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:157
+msgid "Export diagnostics"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:117
+msgid "Health"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:151
+msgid "Info"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:127
+msgid "Last event"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:176 admin/class-diagnostics-page.php:214
+msgid "Level"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:125
+msgid "Maximum events"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:168
+msgid "Maximum stored events"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:217
+msgid "Message"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:146
+msgid "Minimum severity"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:122 admin/class-diagnostics-page.php:128
+msgid "No"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:222
+msgid "No diagnostic events found."
+msgstr ""
+
+#: admin/class-diagnostics-page.php:127
+msgid "None"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:147
+msgid "Only events at this severity or higher are stored."
+msgstr ""
+
+#: admin/class-diagnostics-page.php:121
+msgid "PHP version"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:119
+msgid "Plugin version"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:172
+msgid "Recent Events"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:124
+msgid "Retention days"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:123
+msgid "Storage backend"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:140
+msgid "Store redacted diagnostic events for troubleshooting. Leave disabled unless support is needed."
+msgstr ""
+
+#: admin/class-diagnostics-page.php:126
+msgid "Stored events"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:169
+msgid "The oldest events are discarded when this limit is reached."
+msgstr ""
+
+#: admin/class-diagnostics-page.php:213
+msgid "Time"
+msgstr ""
+
+#: includes/Admin/Settings/class-admin-settings-schema.php:152
+msgid "Warning"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:120
+msgid "WordPress version"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:122 admin/class-diagnostics-page.php:128
+msgid "Yes"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:77
+msgid "You do not have permission to clear diagnostics."
+msgstr ""
+
+#: admin/class-diagnostics-page.php:52
+msgid "You do not have permission to export diagnostics."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:50
+msgid "No custom fonts yet"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:51
+msgid "Create a font family above, then upload each font weight you need for certificate templates."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:75
+msgid "Font Family Name"
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:207
+msgid "Delete the %1$s %2$s font weight? This action cannot be undone."
+msgstr ""
+
+#: admin/class-fonts-settings-page-renderer.php:265
+msgid "Delete the %s font family and all of its weights? This action cannot be undone."
+msgstr ""
+
+#: admin/class-diagnostics-page.php:119
+msgid "Diagnostics health summary"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:163
+msgid "Clear all stored diagnostic events? This action cannot be undone."
+msgstr ""
+
+#: admin/class-diagnostics-page.php:214
+msgid "Recent diagnostic events"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:225
+msgid "No diagnostic events found"
+msgstr ""
+
+#: admin/class-diagnostics-page.php:226
+msgid "Diagnostic events will appear here after logging is enabled and an event is recorded."
+msgstr ""
+
+#: public/class-frontend.php:177
+msgid "No certificates yet"
+msgstr ""
+
+#: public/class-frontend.php:178
+msgid "Generated certificates will appear here when they are available for your account."
+msgstr ""
+
+#: admin/class-template-admin.php:179 assets/src/admin/template-builder/i18n.js:12
+msgid "Remove this dropdown option? This action cannot be undone."
+msgstr ""
+
+#: admin/class-template-admin.php:181 assets/src/admin/template-builder/i18n.js:13
+msgid "Remove %s from this template? This action cannot be undone."
+msgstr ""

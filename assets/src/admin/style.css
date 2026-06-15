@@ -34,6 +34,12 @@
   user-select: none;
 }
 
+.acg-variable-marker:focus {
+  outline: 2px solid #2271b1;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(34, 113, 177, 0.2);
+}
+
 .acg-variables-table input[type="text"],
 .acg-variables-table input[type="number"],
 .acg-variables-table select {
@@ -67,20 +73,32 @@
 
 /* Drag handle column */
 .acg-drag-handle {
-  cursor: grab;
   width: 30px;
   text-align: center;
   color: #999;
-  font-size: 16px;
   user-select: none;
 }
 
-.acg-drag-handle:hover {
-  color: #666;
+.acg-reorder-controls {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
 }
 
-.acg-drag-handle:active {
-  cursor: grabbing;
+.acg-reorder-button {
+  min-width: 24px;
+  min-height: 24px;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  color: #2271b1;
+}
+
+.acg-reorder-button:disabled,
+.acg-reorder-button[aria-disabled="true"] {
+  color: #a7aaad;
+  cursor: default;
 }
 
 /* Row being dragged */

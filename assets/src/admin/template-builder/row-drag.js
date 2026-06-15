@@ -1,5 +1,6 @@
 import { state, dom } from './state.js';
-import { updateHiddenInput } from './rest-save.js';
+import { setSaveStatus, updateHiddenInput } from './rest-save.js';
+import { i18n, sprintfNumber } from './i18n.js';
 
 export const handleDragStart = (event) => {
   const row = event.target.closest('tr[data-var-id]');
@@ -11,6 +12,36 @@ export const handleDragStart = (event) => {
   row.classList.add('acg-dragging');
   event.dataTransfer.effectAllowed = 'move';
   event.dataTransfer.setData('text/plain', row.dataset.varId);
+};
+
+const focusReorderButton = (variableId, direction) => {
+  window.requestAnimationFrame(() => {
+    const row = dom.tableBody?.querySelector(`tr[data-var-id="${variableId}"]`);
+    const button = row?.querySelector(`[data-reorder-direction="${direction}"]:not(:disabled)`);
+    if (button) {
+      button.focus();
+    }
+  });
+};
+
+export const moveVariable = (variableId, direction, renderVariables) => {
+  const currentIndex = state.variables.findIndex((variable) => variable.id === variableId);
+  if (currentIndex < 0) {
+    return;
+  }
+
+  const nextIndex = currentIndex + direction;
+  if (nextIndex < 0 || nextIndex >= state.variables.length) {
+    return;
+  }
+
+  const [movedVariable] = state.variables.splice(currentIndex, 1);
+  state.variables.splice(nextIndex, 0, movedVariable);
+
+  updateHiddenInput();
+  renderVariables();
+  setSaveStatus(sprintfNumber(i18n.variableMoved, nextIndex + 1));
+  focusReorderButton(variableId, direction < 0 ? 'up' : 'down');
 };
 
 export const handleDragOver = (event) => {
@@ -47,6 +78,7 @@ export const handleDrop = (event, renderVariables) => {
 
   updateHiddenInput();
   renderVariables();
+  setSaveStatus(sprintfNumber(i18n.variableMoved, targetIndex + 1));
 };
 
 export const handleDragEnd = () => {

@@ -9,6 +9,11 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Cpt;
 
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Registers plugin custom post types and related editor behavior.
+ */
 class Alynt_Certificate_Generator_Cpt_Manager {
 	/**
 	 * Register CPTs.
@@ -24,8 +29,8 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 	 * Register meta fields.
 	 */
 	public function register_meta(): void {
-		$this->register_certificate_template_meta();
-		$this->register_email_template_meta();
+		$meta_manager = new Alynt_Certificate_Generator_Cpt_Meta_Manager();
+		$meta_manager->register_meta();
 	}
 
 	/**
@@ -47,14 +52,14 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 		);
 
 		$args = array(
-			'labels'              => $labels,
-			'public'              => false,
-			'show_ui'             => true,
-			'show_in_menu'        => 'alynt-certificate-generator',
-			'capability_type'     => 'post',
-			'show_in_rest'        => true,
-			'supports'            => array( 'title' ),
-			'menu_icon'           => 'dashicons-awards',
+			'labels'          => $labels,
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => 'alynt-certificate-generator',
+			'capability_type' => 'post',
+			'show_in_rest'    => true,
+			'supports'        => array( 'title' ),
+			'menu_icon'       => 'dashicons-awards',
 		);
 
 		\register_post_type( 'acg_cert_template', $args );
@@ -73,7 +78,7 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 		$legacy_type = 'acg_certificate_template';
 		$new_type    = 'acg_cert_template';
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time CPT slug migration.
 		$wpdb->update(
 			$wpdb->posts,
 			array( 'post_type' => $new_type ),
@@ -104,224 +109,16 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 		);
 
 		$args = array(
-			'labels'              => $labels,
-			'public'              => false,
-			'show_ui'             => true,
-			'show_in_menu'        => 'alynt-certificate-generator',
-			'capability_type'     => 'post',
-			'show_in_rest'        => true,
-			'supports'            => array( 'title' ),
+			'labels'          => $labels,
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => 'alynt-certificate-generator',
+			'capability_type' => 'post',
+			'show_in_rest'    => true,
+			'supports'        => array( 'title' ),
 		);
 
 		\register_post_type( 'acg_email_template', $args );
-	}
-
-	/**
-	 * Register certificate template meta.
-	 */
-	private function register_certificate_template_meta(): void {
-		\register_post_meta(
-			'acg_cert_template',
-			'acg_template_image_id',
-			array(
-				'type'              => 'integer',
-				'single'            => true,
-				'sanitize_callback' => 'absint',
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_cert_template',
-			'acg_template_orientation',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => array( $this, 'sanitize_orientation' ),
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_cert_template',
-			'acg_template_variables',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => array( $this, 'sanitize_json_string' ),
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_cert_template',
-			'acg_template_permissions',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => array( $this, 'sanitize_json_string' ),
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_cert_template',
-			'acg_template_webhook_settings',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => array( $this, 'sanitize_json_string' ),
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-	}
-
-	/**
-	 * Register email template meta.
-	 */
-	private function register_email_template_meta(): void {
-		\register_post_meta(
-			'acg_email_template',
-			'acg_email_enabled',
-			array(
-				'type'              => 'boolean',
-				'single'            => true,
-				'sanitize_callback' => array( $this, 'sanitize_boolean' ),
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_email_template',
-			'acg_email_to',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => 'sanitize_text_field',
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_email_template',
-			'acg_email_subject',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => 'sanitize_text_field',
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_email_template',
-			'acg_email_body',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => 'wp_kses_post',
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_email_template',
-			'acg_email_attach_pdf',
-			array(
-				'type'              => 'boolean',
-				'single'            => true,
-				'sanitize_callback' => array( $this, 'sanitize_boolean' ),
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-
-		\register_post_meta(
-			'acg_email_template',
-			'acg_email_template_id',
-			array(
-				'type'              => 'integer',
-				'single'            => true,
-				'sanitize_callback' => 'absint',
-				'show_in_rest'      => true,
-				'auth_callback'     => array( $this, 'can_manage_templates' ),
-			)
-		);
-	}
-
-	/**
-	 * Sanitize orientation value.
-	 *
-	 * @param string $value Orientation.
-	 * @return string
-	 */
-	public function sanitize_orientation( string $value ): string {
-		$allowed = array( 'landscape', 'portrait' );
-		if ( ! in_array( $value, $allowed, true ) ) {
-			return 'landscape';
-		}
-
-		return $value;
-	}
-
-	/**
-	 * Sanitize JSON string values.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	public function sanitize_json_string( $value ): string {
-		// DEBUG: Log sanitization.
-		error_log( 'ACG DEBUG sanitize_json_string: input type=' . gettype( $value ) . ', length=' . ( is_string( $value ) ? strlen( $value ) : 'N/A' ) );
-
-		if ( is_array( $value ) || is_object( $value ) ) {
-			$result = \wp_json_encode( $value );
-			error_log( 'ACG DEBUG sanitize_json_string: was array/object, encoded length=' . strlen( $result ) );
-			return $result;
-		}
-
-		if ( ! is_string( $value ) ) {
-			error_log( 'ACG DEBUG sanitize_json_string: not a string, returning empty' );
-			return '';
-		}
-
-		$decoded = json_decode( $value, true );
-		if ( JSON_ERROR_NONE !== json_last_error() ) {
-			error_log( 'ACG DEBUG sanitize_json_string: JSON decode failed with error=' . json_last_error_msg() . ', input=' . substr( $value, 0, 200 ) );
-			return '';
-		}
-
-		$result = \wp_json_encode( $decoded );
-		error_log( 'ACG DEBUG sanitize_json_string: success, output length=' . strlen( $result ) );
-		return $result;
-	}
-
-	/**
-	 * Sanitize boolean values.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return bool
-	 */
-	public function sanitize_boolean( $value ): bool {
-		return (bool) $value;
-	}
-
-	/**
-	 * Check if the current user can manage templates.
-	 *
-	 * @return bool
-	 */
-	public function can_manage_templates(): bool {
-		return \current_user_can( ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE );
 	}
 
 	/**
@@ -333,26 +130,42 @@ class Alynt_Certificate_Generator_Cpt_Manager {
 	private function disable_block_editor_for_templates(): void {
 		\add_filter(
 			'use_block_editor_for_post_type',
-			function ( bool $use, string $post_type ): bool {
-				if ( in_array( $post_type, array( 'acg_cert_template', 'acg_email_template' ), true ) ) {
-					return false;
-				}
-				return $use;
-			},
+			array( $this, 'disable_block_editor_for_template_post_type' ),
 			999,
 			2
 		);
 
 		\add_filter(
 			'use_block_editor_for_post',
-			function ( bool $use, \WP_Post $post ): bool {
-				if ( in_array( $post->post_type, array( 'acg_cert_template', 'acg_email_template' ), true ) ) {
-					return false;
-				}
-				return $use;
-			},
+			array( $this, 'disable_block_editor_for_template_post' ),
 			999,
 			2
 		);
+	}
+
+	/**
+	 * Disable block editor for plugin template post types.
+	 *
+	 * @param bool   $should_use Current editor decision.
+	 * @param string $post_type  Post type.
+	 * @return bool
+	 */
+	public function disable_block_editor_for_template_post_type( bool $should_use, string $post_type ): bool {
+		if ( in_array( $post_type, array( 'acg_cert_template', 'acg_email_template' ), true ) ) {
+			return false;
+		}
+
+		return $should_use;
+	}
+
+	/**
+	 * Disable block editor for plugin template posts.
+	 *
+	 * @param bool     $should_use Current editor decision.
+	 * @param \WP_Post $post       Post object.
+	 * @return bool
+	 */
+	public function disable_block_editor_for_template_post( bool $should_use, \WP_Post $post ): bool {
+		return $this->disable_block_editor_for_template_post_type( $should_use, $post->post_type );
 	}
 }

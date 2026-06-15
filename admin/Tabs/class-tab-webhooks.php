@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\AdminUi\Tabs;
 
+defined( 'ABSPATH' ) || exit;
+
 class Alynt_Certificate_Generator_Tab_Webhooks extends Alynt_Certificate_Generator_Tab_Base {
 	public function get_id(): string {
 		return 'webhooks';

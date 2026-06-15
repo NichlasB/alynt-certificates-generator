@@ -1,5 +1,6 @@
 import { state, dom, updatePreviewRefs } from './state.js';
 import { renderOverlay } from './overlay.js';
+import { i18n } from './i18n.js';
 
 export const setPreviewImage = (url, width, height) => {
   const previewContainer = dom.builder.querySelector('.acg-template-preview');
@@ -14,10 +15,17 @@ export const setPreviewImage = (url, width, height) => {
     dom.builder.dataset.imageHeight = height;
   }
 
-  previewContainer.innerHTML = `
-    <img id="acg-template-image" src="${url}" alt="" />
-    <div id="acg-template-overlay" class="acg-template-overlay"></div>
-  `;
+  previewContainer.replaceChildren();
+  const image = document.createElement('img');
+  image.id = 'acg-template-image';
+  image.src = url;
+  image.alt = '';
+
+  const overlay = document.createElement('div');
+  overlay.id = 'acg-template-overlay';
+  overlay.className = 'acg-template-overlay';
+
+  previewContainer.append(image, overlay);
 
   updatePreviewRefs();
 
@@ -51,8 +59,8 @@ export const initMediaPicker = () => {
 
   dom.imageButton.addEventListener('click', () => {
     const frame = window.wp?.media({
-      title: 'Select certificate template',
-      button: { text: 'Use this image' },
+      title: i18n.selectCertificateTemplate,
+      button: { text: i18n.useThisImage },
       multiple: false,
     });
 
@@ -63,7 +71,13 @@ export const initMediaPicker = () => {
     frame.on('select', () => {
       const attachment = frame.state().get('selection').first().toJSON();
       dom.imageIdInput.value = attachment.id;
-      dom.imagePreview.innerHTML = `<img src="${attachment.url}" style="max-width:100%;height:auto;" alt="" />`;
+      dom.imagePreview.replaceChildren();
+      const image = document.createElement('img');
+      image.src = attachment.url;
+      image.alt = '';
+      image.style.maxWidth = '100%';
+      image.style.height = 'auto';
+      dom.imagePreview.appendChild(image);
       setPreviewImage(attachment.url, attachment.width, attachment.height);
     });
 

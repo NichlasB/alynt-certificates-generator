@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Rest;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -45,7 +47,14 @@ class Alynt_Certificate_Generator_Template_Service {
 			);
 		}
 
-		\update_post_meta( $template_id, 'acg_template_variables', $variables );
+		$updated = \update_post_meta( $template_id, 'acg_template_variables', $variables );
+		if ( false === $updated && (string) \get_post_meta( $template_id, 'acg_template_variables', true ) !== $variables ) {
+			return new WP_Error(
+				'acg_variables_save_failed',
+				__( 'Template variables could not be saved.', 'alynt-certificate-generator' ),
+				array( 'status' => 500 )
+			);
+		}
 
 		return new WP_REST_Response(
 			array(

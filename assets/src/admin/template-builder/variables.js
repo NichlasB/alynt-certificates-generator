@@ -1,4 +1,5 @@
 import { migrateCoordinates } from './coordinates.js';
+import { i18n, sprintfNumber } from './i18n.js';
 
 export const parseVariables = (value) => {
   if (!value) {
@@ -15,7 +16,7 @@ export const parseVariables = (value) => {
 export const ensureDefaults = (variable, index) => {
   const withDefaults = {
     id: variable.id || `var_${Date.now()}_${index}`,
-    label: variable.label || `Variable ${index + 1}`,
+    label: variable.label || sprintfNumber(i18n.variableLabel, index + 1),
     key: variable.key || `variable_${index + 1}`,
     type: variable.type || 'text',
     required: variable.required ?? true,

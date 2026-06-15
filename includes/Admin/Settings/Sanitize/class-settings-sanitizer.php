@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Admin\Settings\Sanitize;
 
+defined( 'ABSPATH' ) || exit;
+
 use Alynt\CertificateGenerator\Admin\Settings\Alynt_Certificate_Generator_Admin_Settings_Schema;
 
 class Alynt_Certificate_Generator_Settings_Sanitizer {

@@ -1,3 +1,46 @@
 .alynt-certificate-generator__frontend-placeholder {
   display: none;
 }
+
+.acg-certificate-form .acg-field {
+  margin-bottom: 1rem;
+}
+
+.acg-certificate-form .acg-field label {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.acg-certificate-form .acg-field input[type="text"],
+.acg-certificate-form .acg-field input[type="date"],
+.acg-certificate-form .acg-field input[type="file"],
+.acg-certificate-form .acg-field select {
+  max-width: 100%;
+}
+
+.acg-certificate-form .acg-field-error {
+  margin: 0.35rem 0 0;
+  color: #b32d2e;
+  font-weight: 600;
+}
+
+.acg-certificate-form [aria-invalid="true"] {
+  border-color: #b32d2e;
+  box-shadow: 0 0 0 1px #b32d2e;
+}
+
+.acg-certificate-message {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #2271b1;
+  background: #f6f7f7;
+}
+
+.acg-certificate-message--error {
+  border-left-color: #b32d2e;
+}
+
+.acg-certificate-message--success {
+  border-left-color: #008a20;
+}

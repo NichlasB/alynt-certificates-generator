@@ -51,8 +51,6 @@ wp-config.php
 /vendor/
 /node_modules/
 /assets/dist/
-/composer.lock
-/package-lock.json
 /.phpcs-cache
 /.phpunit.result.cache
 /composer.phar
@@ -60,3 +58,10 @@ wp-config.php
 # Local-only workflow files
 deploy.sh
 session-context.tmp.md
+/coverage/
+/.npm-cache/
+.env
+.env.local
+*.map
+session-handoff.tmp.md
+implementation-plan.tmp.md

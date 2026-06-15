@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\AdminUi;
 
+defined( 'ABSPATH' ) || exit;
+
 class Alynt_Certificate_Generator_Email_Template_Admin {
 	/**
 	 * Register metaboxes for email templates.
@@ -41,13 +43,14 @@ class Alynt_Certificate_Generator_Email_Template_Admin {
 
 		$templates = \get_posts(
 			array(
-				'post_type'      => 'acg_cert_template',
-				'post_status'    => 'any',
-				'numberposts'    => -1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'cache_results'  => false,
-				'suppress_filters' => true,
+				'post_type'              => 'acg_cert_template',
+				'post_status'            => 'any',
+				'numberposts'            => -1,
+				'fields'                 => 'ids',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'suppress_filters'       => true,
 			)
 		);
 
@@ -102,7 +105,8 @@ class Alynt_Certificate_Generator_Email_Template_Admin {
 			return;
 		}
 
-		if ( ! isset( $_POST['acg_email_template_nonce'] ) || ! \wp_verify_nonce( wp_unslash( $_POST['acg_email_template_nonce'] ), 'acg_email_template_save' ) ) {
+		$nonce = isset( $_POST['acg_email_template_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['acg_email_template_nonce'] ) ) : '';
+		if ( '' === $nonce || ! \wp_verify_nonce( $nonce, 'acg_email_template_save' ) ) {
 			return;
 		}
 

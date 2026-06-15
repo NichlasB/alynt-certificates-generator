@@ -1,8 +1,12 @@
 import { state, dom } from './state.js';
-import { dateFormats, autoTypes, variableTypes, alignOptions } from './constants.js';
+import { variableTypes } from './constants.js';
 import { formatPercentage, parsePercentageInput } from './coordinates.js';
 import { updateHiddenInput } from './rest-save.js';
-import { buildSelect, addFontsToGroup } from './ui-helpers.js';
+import { buildSelect } from './ui-helpers.js';
+import { renderOptionsRow } from './row-options.js';
+import { createStyleCell } from './row-style-cell.js';
+import { i18n, sprintfString } from './i18n.js';
+import { moveVariable } from './row-drag.js';
 
 export const renderRow = (variable, index, renderVariables, renderOverlay) => {
   const row = document.createElement('tr');
@@ -12,13 +16,14 @@ export const renderRow = (variable, index, renderVariables, renderOverlay) => {
 
   const dragCell = document.createElement('td');
   dragCell.className = 'acg-drag-handle';
-  dragCell.innerHTML = '&#9776;';
-  dragCell.title = 'Drag to reorder';
+  dragCell.title = i18n.dragToReorder;
+  dragCell.appendChild(createReorderControls(variable, index, renderVariables));
 
   const labelCell = document.createElement('td');
   const labelInput = document.createElement('input');
   labelInput.type = 'text';
   labelInput.value = variable.label;
+  labelInput.setAttribute('aria-label', sprintfString(i18n.labelField, variable.label || variable.key));
   labelInput.addEventListener('input', () => {
     variable.label = labelInput.value;
     updateHiddenInput();
@@ -33,6 +38,7 @@ export const renderRow = (variable, index, renderVariables, renderOverlay) => {
   const keyInput = document.createElement('input');
   keyInput.type = 'text';
   keyInput.value = variable.key;
+  keyInput.setAttribute('aria-label', sprintfString(i18n.keyField, variable.label || variable.key));
   keyInput.addEventListener('input', () => {
     variable.key = keyInput.value;
     updateHiddenInput();
@@ -41,6 +47,7 @@ export const renderRow = (variable, index, renderVariables, renderOverlay) => {
 
   const typeCell = document.createElement('td');
   const typeSelect = buildSelect(variableTypes, variable.type);
+  typeSelect.setAttribute('aria-label', sprintfString(i18n.typeField, variable.label || variable.key));
   typeSelect.addEventListener('change', () => {
     variable.type = typeSelect.value;
     updateHiddenInput();
@@ -52,6 +59,7 @@ export const renderRow = (variable, index, renderVariables, renderOverlay) => {
   const requiredInput = document.createElement('input');
   requiredInput.type = 'checkbox';
   requiredInput.checked = Boolean(variable.required);
+  requiredInput.setAttribute('aria-label', sprintfString(i18n.requiredField, variable.label || variable.key));
   requiredInput.addEventListener('change', () => {
     variable.required = requiredInput.checked;
     updateHiddenInput();
@@ -62,6 +70,7 @@ export const renderRow = (variable, index, renderVariables, renderOverlay) => {
   const displayInput = document.createElement('input');
   displayInput.type = 'checkbox';
   displayInput.checked = Boolean(variable.display_on_certificate);
+  displayInput.setAttribute('aria-label', sprintfString(i18n.displayField, variable.label || variable.key));
   displayInput.addEventListener('change', () => {
     variable.display_on_certificate = displayInput.checked;
     updateHiddenInput();
@@ -81,141 +90,40 @@ export const renderRow = (variable, index, renderVariables, renderOverlay) => {
   }
 };
 
-const createStyleCell = (variable, renderOverlay) => {
-  const styleCell = document.createElement('td');
-  styleCell.className = 'acg-variable-style';
+const createReorderControls = (variable, index, renderVariables) => {
+  const controls = document.createElement('div');
+  controls.className = 'acg-reorder-controls';
 
-  const fontSelect = document.createElement('select');
+  const upButton = createReorderButton(
+    i18n.moveVariableUp,
+    'up',
+    index === 0,
+    () => moveVariable(variable.id, -1, renderVariables),
+  );
 
-  const systemFontList = state.allFonts.filter((f) => f.type === 'system' || !f.type);
-  const globalFontList = state.allFonts.filter((f) => f.type === 'global');
-  const templateFontList = state.allFonts.filter((f) => f.type === 'template');
+  const downButton = createReorderButton(
+    i18n.moveVariableDown,
+    'down',
+    index >= state.variables.length - 1,
+    () => moveVariable(variable.id, 1, renderVariables),
+  );
 
-  addFontsToGroup(fontSelect, systemFontList, 'System Fonts', variable.style.font_family);
-  addFontsToGroup(fontSelect, globalFontList, 'Custom Fonts (Global)', variable.style.font_family);
-  addFontsToGroup(fontSelect, templateFontList, 'Custom Fonts (Template)', variable.style.font_family);
-
-  fontSelect.addEventListener('change', () => {
-    variable.style.font_family = fontSelect.value;
-    updateHiddenInput();
-    renderOverlay();
-  });
-
-  const sizeInput = document.createElement('input');
-  sizeInput.type = 'number';
-  sizeInput.min = '8';
-  sizeInput.value = variable.style.font_size;
-  sizeInput.addEventListener('input', () => {
-    variable.style.font_size = Number(sizeInput.value) || 0;
-    updateHiddenInput();
-    renderOverlay();
-  });
-
-  const colorInput = document.createElement('input');
-  colorInput.type = 'color';
-  colorInput.value = variable.style.color;
-  colorInput.addEventListener('input', () => {
-    variable.style.color = colorInput.value;
-    updateHiddenInput();
-    renderOverlay();
-  });
-
-  const alignSelect = buildSelect(alignOptions, variable.style.align || 'left');
-  alignSelect.addEventListener('change', () => {
-    variable.style.align = alignSelect.value;
-    updateHiddenInput();
-    renderOverlay();
-  });
-
-  const boldInput = document.createElement('input');
-  boldInput.type = 'checkbox';
-  boldInput.checked = Boolean(variable.style.bold);
-  boldInput.addEventListener('change', () => {
-    variable.style.bold = boldInput.checked;
-    updateHiddenInput();
-    renderOverlay();
-  });
-
-  const italicInput = document.createElement('input');
-  italicInput.type = 'checkbox';
-  italicInput.checked = Boolean(variable.style.italic);
-  italicInput.addEventListener('change', () => {
-    variable.style.italic = italicInput.checked;
-    updateHiddenInput();
-    renderOverlay();
-  });
-
-  const styleRow = document.createElement('div');
-  styleRow.className = 'acg-style-row';
-  styleRow.append('Font ', fontSelect, ' Size ', sizeInput, ' Color ', colorInput);
-
-  const styleRow2 = document.createElement('div');
-  styleRow2.className = 'acg-style-row acg-style-row-compact';
-  styleRow2.append('Align ', alignSelect, ' B ', boldInput, ' I ', italicInput);
-
-  styleCell.appendChild(styleRow);
-  styleCell.appendChild(styleRow2);
-
-  const typeRow = createTypeSpecificRow(variable);
-  if (typeRow.childNodes.length > 0) {
-    styleCell.appendChild(typeRow);
-  }
-
-  if (variable.type === 'select') {
-    const selectInfo = document.createElement('div');
-    selectInfo.className = 'acg-style-row';
-    selectInfo.innerHTML = `<em style="color: #666; font-size: 11px;">Options: ${variable.options.length} (edit below)</em>`;
-    styleCell.appendChild(selectInfo);
-  }
-
-  return styleCell;
+  controls.append(upButton, downButton);
+  return controls;
 };
 
-const createTypeSpecificRow = (variable) => {
-  const typeRow = document.createElement('div');
-  typeRow.className = 'acg-style-row';
+const createReorderButton = (label, direction, disabled, onClick) => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'button-link acg-reorder-button';
+  button.dataset.reorderDirection = direction;
+  button.innerHTML = direction === 'up' ? '&uarr;' : '&darr;';
+  button.setAttribute('aria-label', label);
+  button.disabled = disabled;
+  button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+  button.addEventListener('click', onClick);
 
-  if (variable.type === 'date') {
-    const dateSelect = buildSelect(dateFormats, variable.date_format);
-    dateSelect.addEventListener('change', () => {
-      variable.date_format = dateSelect.value;
-      updateHiddenInput();
-    });
-    typeRow.append('Format ', dateSelect);
-  }
-
-  if (variable.type === 'auto') {
-    const autoSelect = buildSelect(autoTypes, variable.auto_type);
-    autoSelect.addEventListener('change', () => {
-      variable.auto_type = autoSelect.value;
-      updateHiddenInput();
-    });
-    typeRow.append('Auto ', autoSelect);
-  }
-
-  if (variable.type === 'image') {
-    const maxW = document.createElement('input');
-    maxW.type = 'number';
-    maxW.min = '1';
-    maxW.value = variable.image_max_width;
-    maxW.addEventListener('input', () => {
-      variable.image_max_width = Number(maxW.value) || 0;
-      updateHiddenInput();
-    });
-
-    const maxH = document.createElement('input');
-    maxH.type = 'number';
-    maxH.min = '1';
-    maxH.value = variable.image_max_height;
-    maxH.addEventListener('input', () => {
-      variable.image_max_height = Number(maxH.value) || 0;
-      updateHiddenInput();
-    });
-
-    typeRow.append('Max W ', maxW, ' Max H ', maxH);
-  }
-
-  return typeRow;
+  return button;
 };
 
 const createPositionCell = (variable, renderOverlay) => {
@@ -227,11 +135,12 @@ const createPositionCell = (variable, renderOverlay) => {
   const xRow = document.createElement('div');
   xRow.className = 'acg-position-row';
   const xLabel = document.createElement('label');
-  xLabel.textContent = 'X:';
+  xLabel.textContent = i18n.xCoordinate;
   xLabel.style.marginRight = '4px';
 
   const xInput = document.createElement('input');
   xInput.type = 'text';
+  xInput.setAttribute('aria-label', i18n.xCoordinate);
   xInput.value = formatPercentage(variable.x);
   xInput.dataset.field = 'x';
   xInput.style.width = '70px';
@@ -249,11 +158,12 @@ const createPositionCell = (variable, renderOverlay) => {
   const yRow = document.createElement('div');
   yRow.className = 'acg-position-row';
   const yLabel = document.createElement('label');
-  yLabel.textContent = 'Y:';
+  yLabel.textContent = i18n.yCoordinate;
   yLabel.style.marginRight = '4px';
 
   const yInput = document.createElement('input');
   yInput.type = 'text';
+  yInput.setAttribute('aria-label', i18n.yCoordinate);
   yInput.value = formatPercentage(variable.y);
   yInput.dataset.field = 'y';
   yInput.style.width = '70px';
@@ -279,95 +189,17 @@ const createActionCell = (variable, renderVariables) => {
   const actionCell = document.createElement('td');
   const deleteButton = document.createElement('button');
   deleteButton.type = 'button';
-  deleteButton.className = 'button';
-  deleteButton.textContent = 'Remove';
+  deleteButton.className = 'button-link button-link-delete';
+  deleteButton.textContent = i18n.remove;
   deleteButton.addEventListener('click', () => {
+    const variableLabel = variable.label || variable.key || i18n.variableLabel;
+    if (!window.confirm(sprintfString(i18n.confirmRemoveVariable, variableLabel))) {
+      return;
+    }
     state.variables = state.variables.filter((item) => item.id !== variable.id);
     updateHiddenInput();
     renderVariables();
   });
   actionCell.appendChild(deleteButton);
   return actionCell;
-};
-
-const renderOptionsRow = (variable) => {
-  const optionsRow = document.createElement('tr');
-  optionsRow.className = 'acg-options-row';
-  optionsRow.dataset.optionsFor = variable.id;
-
-  const optionsCell = document.createElement('td');
-  optionsCell.colSpan = 9;
-
-  const optionsContainer = document.createElement('div');
-  optionsContainer.className = 'acg-select-options';
-
-  const optionsHeader = document.createElement('div');
-  optionsHeader.style.display = 'flex';
-  optionsHeader.style.justifyContent = 'space-between';
-  optionsHeader.style.alignItems = 'center';
-  optionsHeader.style.marginBottom = '10px';
-
-  const optionsLabel = document.createElement('strong');
-  optionsLabel.textContent = 'Dropdown Options:';
-
-  const optionsCount = document.createElement('span');
-  optionsCount.style.color = '#666';
-  optionsCount.textContent = ` (${variable.options.length} options)`;
-
-  optionsHeader.appendChild(optionsLabel);
-  optionsHeader.appendChild(optionsCount);
-  optionsContainer.appendChild(optionsHeader);
-
-  const optionsList = document.createElement('div');
-  optionsList.className = 'acg-options-list';
-
-  const renderOptionsList = () => {
-    optionsList.innerHTML = '';
-    optionsCount.textContent = ` (${variable.options.length} options)`;
-    variable.options.forEach((option, optIndex) => {
-      const optionRow = document.createElement('div');
-      optionRow.className = 'acg-option-row';
-
-      const labelInput = document.createElement('input');
-      labelInput.type = 'text';
-      labelInput.placeholder = 'Option text (shown in dropdown and on certificate)';
-      labelInput.value = option.label || '';
-      labelInput.addEventListener('input', () => {
-        variable.options[optIndex].label = labelInput.value;
-        updateHiddenInput();
-      });
-
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'button button-small';
-      removeBtn.textContent = 'Remove';
-      removeBtn.addEventListener('click', () => {
-        variable.options.splice(optIndex, 1);
-        updateHiddenInput();
-        renderOptionsList();
-      });
-
-      optionRow.append(labelInput, removeBtn);
-      optionsList.appendChild(optionRow);
-    });
-  };
-
-  renderOptionsList();
-  optionsContainer.appendChild(optionsList);
-
-  const addOptionBtn = document.createElement('button');
-  addOptionBtn.type = 'button';
-  addOptionBtn.className = 'button button-secondary';
-  addOptionBtn.textContent = '+ Add Option';
-  addOptionBtn.style.marginTop = '10px';
-  addOptionBtn.addEventListener('click', () => {
-    variable.options.push({ label: '' });
-    updateHiddenInput();
-    renderOptionsList();
-  });
-
-  optionsContainer.appendChild(addOptionBtn);
-  optionsCell.appendChild(optionsContainer);
-  optionsRow.appendChild(optionsCell);
-  dom.tableBody.appendChild(optionsRow);
 };

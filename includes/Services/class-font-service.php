@@ -11,6 +11,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Services;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 
 class Alynt_Certificate_Generator_Font_Service {
@@ -47,6 +49,13 @@ class Alynt_Certificate_Generator_Font_Service {
 	 * @var Alynt_Certificate_Generator_Font_Converter
 	 */
 	private $converter;
+
+	/**
+	 * Per-request cache of merged font registries keyed by template ID.
+	 *
+	 * @var array<int, array>
+	 */
+	private $all_fonts_cache = array();
 
 	/**
 	 * Constructor.
@@ -117,28 +126,78 @@ class Alynt_Certificate_Generator_Font_Service {
 	public function upload_font( array $file, string $family_name, string $weight, int $template_id = 0 ) {
 		// Check for upload errors.
 		if ( ! empty( $file['error'] ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'warning',
+				'filesystem',
+				'font_upload_error',
+				'Uploaded font file reported an upload error.',
+				array(
+					'upload_error' => (int) $file['error'],
+					'template_id'  => $template_id,
+				)
+			);
 			return new WP_Error( 'acg_upload_error', __( 'File upload failed.', 'alynt-certificate-generator' ) );
 		}
 
 		if ( empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'warning',
+				'filesystem',
+				'font_upload_invalid',
+				'Uploaded font file was invalid.',
+				array(
+					'template_id' => $template_id,
+				)
+			);
 			return new WP_Error( 'acg_upload_error', __( 'Invalid file upload.', 'alynt-certificate-generator' ) );
 		}
 
 		// Validate file extension.
 		$ext_check = $this->validator->validate_extension( $file['name'] );
 		if ( is_wp_error( $ext_check ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'warning',
+				'filesystem',
+				'font_extension_invalid',
+				'Uploaded font file extension was rejected.',
+				array(
+					'template_id' => $template_id,
+					'error_code'  => $ext_check->get_error_code(),
+				)
+			);
 			return $ext_check;
 		}
 
 		// Generate family slug.
 		$family_slug = sanitize_title( $family_name );
 		if ( '' === $family_slug ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'warning',
+				'filesystem',
+				'font_family_invalid',
+				'Uploaded font family name was invalid.',
+				array(
+					'template_id' => $template_id,
+				)
+			);
 			return new WP_Error( 'acg_font_invalid_name', __( 'Invalid font family name.', 'alynt-certificate-generator' ) );
 		}
 
 		// Convert and store.
 		$result = $this->converter->convert_and_store( $file['tmp_name'], $family_slug, $weight );
 		if ( is_wp_error( $result ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'error',
+				'filesystem',
+				'font_convert_failed',
+				'Uploaded font could not be converted or stored.',
+				array(
+					'template_id' => $template_id,
+					'family_slug' => $family_slug,
+					'weight'      => $weight,
+					'error_code'  => $result->get_error_code(),
+				)
+			);
 			return $result;
 		}
 
@@ -178,6 +237,7 @@ class Alynt_Certificate_Generator_Font_Service {
 		);
 
 		\update_option( self::OPTION_KEY, $fonts );
+		$this->clear_fonts_cache();
 	}
 
 	/**
@@ -201,6 +261,7 @@ class Alynt_Certificate_Generator_Font_Service {
 		);
 
 		\update_post_meta( $template_id, self::META_KEY, wp_json_encode( $fonts ) );
+		$this->clear_fonts_cache();
 	}
 
 	/**
@@ -227,44 +288,117 @@ class Alynt_Certificate_Generator_Font_Service {
 	 * Get all available fonts for a template (global + template-specific).
 	 */
 	public function get_all_fonts_for_template( int $template_id ): array {
-		return array_merge( $this->get_global_fonts(), $this->get_template_fonts( $template_id ) );
+		if ( isset( $this->all_fonts_cache[ $template_id ] ) ) {
+			return $this->all_fonts_cache[ $template_id ];
+		}
+
+		$this->all_fonts_cache[ $template_id ] = array_merge( $this->get_global_fonts(), $this->get_template_fonts( $template_id ) );
+		return $this->all_fonts_cache[ $template_id ];
 	}
 
 	/** Get system fonts (built-in TCPDF fonts). */
 	public function get_system_fonts(): array {
-		$w = array( 'regular' => true, 'bold' => true, 'italic' => true, 'bold_italic' => true );
+		$w = array(
+			'regular'     => true,
+			'bold'        => true,
+			'italic'      => true,
+			'bold_italic' => true,
+		);
 		return array(
-			'arial' => array( 'family' => 'Arial', 'slug' => 'arial', 'tcpdf' => 'helvetica', 'weights' => $w ),
-			'helvetica' => array( 'family' => 'Helvetica', 'slug' => 'helvetica', 'tcpdf' => 'helvetica', 'weights' => $w ),
-			'times_new_roman' => array( 'family' => 'Times New Roman', 'slug' => 'times_new_roman', 'tcpdf' => 'times', 'weights' => $w ),
-			'georgia' => array( 'family' => 'Georgia', 'slug' => 'georgia', 'tcpdf' => 'times', 'weights' => $w ),
-			'courier_new' => array( 'family' => 'Courier New', 'slug' => 'courier_new', 'tcpdf' => 'courier', 'weights' => $w ),
-			'verdana' => array( 'family' => 'Verdana', 'slug' => 'verdana', 'tcpdf' => 'helvetica', 'weights' => $w ),
+			'arial'           => array(
+				'family'  => 'Arial',
+				'slug'    => 'arial',
+				'tcpdf'   => 'helvetica',
+				'weights' => $w,
+			),
+			'helvetica'       => array(
+				'family'  => 'Helvetica',
+				'slug'    => 'helvetica',
+				'tcpdf'   => 'helvetica',
+				'weights' => $w,
+			),
+			'times_new_roman' => array(
+				'family'  => 'Times New Roman',
+				'slug'    => 'times_new_roman',
+				'tcpdf'   => 'times',
+				'weights' => $w,
+			),
+			'georgia'         => array(
+				'family'  => 'Georgia',
+				'slug'    => 'georgia',
+				'tcpdf'   => 'times',
+				'weights' => $w,
+			),
+			'courier_new'     => array(
+				'family'  => 'Courier New',
+				'slug'    => 'courier_new',
+				'tcpdf'   => 'courier',
+				'weights' => $w,
+			),
+			'verdana'         => array(
+				'family'  => 'Verdana',
+				'slug'    => 'verdana',
+				'tcpdf'   => 'helvetica',
+				'weights' => $w,
+			),
 		);
 	}
 
 	/** Delete a font family. */
 	public function delete_font_family( string $family_slug, int $template_id = 0 ) {
 		$family_slug = sanitize_title( $family_slug );
-		$fonts = $template_id > 0 ? $this->get_template_fonts( $template_id ) : $this->get_global_fonts();
+		$fonts       = $template_id > 0 ? $this->get_template_fonts( $template_id ) : $this->get_global_fonts();
 		if ( ! isset( $fonts[ $family_slug ] ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'warning',
+				'admin_action',
+				'font_family_delete_missing',
+				'Requested font family deletion did not match an existing family.',
+				array(
+					'template_id' => $template_id,
+					'family_slug' => $family_slug,
+				)
+			);
 			return new WP_Error( 'acg_font_not_found', __( 'Font family not found.', 'alynt-certificate-generator' ) );
 		}
 		$this->converter->delete_family_directory( $family_slug );
 		unset( $fonts[ $family_slug ] );
 		$template_id > 0 ? \update_post_meta( $template_id, self::META_KEY, wp_json_encode( $fonts ) ) : \update_option( self::OPTION_KEY, $fonts );
+		$this->clear_fonts_cache();
 		return true;
 	}
 
 	/** Delete a specific font weight. */
 	public function delete_font_weight( string $family_slug, string $weight, int $template_id = 0 ) {
 		$family_slug = sanitize_title( $family_slug );
-		$weight = sanitize_key( $weight );
-		$fonts = $template_id > 0 ? $this->get_template_fonts( $template_id ) : $this->get_global_fonts();
+		$weight      = sanitize_key( $weight );
+		$fonts       = $template_id > 0 ? $this->get_template_fonts( $template_id ) : $this->get_global_fonts();
 		if ( ! isset( $fonts[ $family_slug ] ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'warning',
+				'admin_action',
+				'font_weight_delete_family_missing',
+				'Requested font weight deletion did not match an existing family.',
+				array(
+					'template_id' => $template_id,
+					'family_slug' => $family_slug,
+					'weight'      => $weight,
+				)
+			);
 			return new WP_Error( 'acg_font_not_found', __( 'Font family not found.', 'alynt-certificate-generator' ) );
 		}
 		if ( ! isset( $fonts[ $family_slug ]['weights'][ $weight ] ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'warning',
+				'admin_action',
+				'font_weight_delete_missing',
+				'Requested font weight deletion did not match an existing weight.',
+				array(
+					'template_id' => $template_id,
+					'family_slug' => $family_slug,
+					'weight'      => $weight,
+				)
+			);
 			return new WP_Error( 'acg_font_weight_not_found', __( 'Font weight not found.', 'alynt-certificate-generator' ) );
 		}
 		$this->converter->delete_font_files( $family_slug, $fonts[ $family_slug ]['weights'][ $weight ]['tcpdf_name'] );
@@ -274,12 +408,13 @@ class Alynt_Certificate_Generator_Font_Service {
 			$this->converter->cleanup_empty_directory( $family_slug );
 		}
 		$template_id > 0 ? \update_post_meta( $template_id, self::META_KEY, wp_json_encode( $fonts ) ) : \update_option( self::OPTION_KEY, $fonts );
+		$this->clear_fonts_cache();
 		return true;
 	}
 
 	/** Resolve a font for PDF generation. */
 	public function resolve_font_for_pdf( string $font_family, bool $bold, bool $italic, int $template_id = 0 ): array {
-		$weight = $this->determine_weight( $bold, $italic );
+		$weight    = $this->determine_weight( $bold, $italic );
 		$font_slug = sanitize_title( $font_family );
 		foreach ( $this->get_all_fonts_for_template( $template_id ) as $family_slug => $family_data ) {
 			if ( $family_slug === $font_slug || strtolower( $family_data['family'] ) === strtolower( $font_family ) ) {
@@ -290,49 +425,119 @@ class Alynt_Certificate_Generator_Font_Service {
 	}
 
 	private function determine_weight( bool $bold, bool $italic ): string {
-		if ( $bold && $italic ) return 'bold_italic';
-		if ( $bold ) return 'bold';
-		if ( $italic ) return 'italic';
+		if ( $bold && $italic ) {
+			return 'bold_italic';
+		}
+		if ( $bold ) {
+			return 'bold';
+		}
+		if ( $italic ) {
+			return 'italic';
+		}
 		return 'regular';
 	}
 
 	private function resolve_custom_font( array $family_data, string $weight, bool $bold, bool $italic ): array {
 		$weights = $family_data['weights'] ?? array();
 		if ( isset( $weights[ $weight ] ) ) {
-			return array( 'tcpdf_name' => $weights[ $weight ]['tcpdf_name'], 'file_path' => $weights[ $weight ]['file_path'], 'is_custom' => true, 'simulate_bold' => false, 'simulate_italic' => false );
+			return array(
+				'tcpdf_name'      => $weights[ $weight ]['tcpdf_name'],
+				'file_path'       => $weights[ $weight ]['file_path'],
+				'is_custom'       => true,
+				'simulate_bold'   => false,
+				'simulate_italic' => false,
+			);
 		}
 		if ( isset( $weights['regular'] ) ) {
-			return array( 'tcpdf_name' => $weights['regular']['tcpdf_name'], 'file_path' => $weights['regular']['file_path'], 'is_custom' => true, 'simulate_bold' => $bold && ! isset( $weights['bold'] ), 'simulate_italic' => $italic && ! isset( $weights['italic'] ) );
+			return array(
+				'tcpdf_name'      => $weights['regular']['tcpdf_name'],
+				'file_path'       => $weights['regular']['file_path'],
+				'is_custom'       => true,
+				'simulate_bold'   => $bold && ! isset( $weights['bold'] ),
+				'simulate_italic' => $italic && ! isset( $weights['italic'] ),
+			);
 		}
 		$first = reset( $weights );
-		return $first ? array( 'tcpdf_name' => $first['tcpdf_name'], 'file_path' => $first['file_path'], 'is_custom' => true, 'simulate_bold' => $bold, 'simulate_italic' => $italic ) : $this->default_font_response();
+		return $first ? array(
+			'tcpdf_name'      => $first['tcpdf_name'],
+			'file_path'       => $first['file_path'],
+			'is_custom'       => true,
+			'simulate_bold'   => $bold,
+			'simulate_italic' => $italic,
+		) : $this->default_font_response();
 	}
 
 	private function resolve_system_font( string $font_family, string $font_slug ): array {
 		foreach ( $this->get_system_fonts() as $sys_slug => $sys_data ) {
 			if ( $sys_slug === $font_slug || strtolower( $sys_data['family'] ) === strtolower( $font_family ) ) {
-				return array( 'tcpdf_name' => $sys_data['tcpdf'], 'file_path' => '', 'is_custom' => false, 'simulate_bold' => false, 'simulate_italic' => false );
+				return array(
+					'tcpdf_name'      => $sys_data['tcpdf'],
+					'file_path'       => '',
+					'is_custom'       => false,
+					'simulate_bold'   => false,
+					'simulate_italic' => false,
+				);
 			}
 		}
 		return $this->default_font_response();
 	}
 
 	private function default_font_response(): array {
-		return array( 'tcpdf_name' => 'helvetica', 'file_path' => '', 'is_custom' => false, 'simulate_bold' => false, 'simulate_italic' => false );
+		return array(
+			'tcpdf_name'      => 'helvetica',
+			'file_path'       => '',
+			'is_custom'       => false,
+			'simulate_bold'   => false,
+			'simulate_italic' => false,
+		);
 	}
 
 	/** Create a new font family entry without uploading files. */
 	public function create_font_family( string $family_name, int $template_id = 0 ) {
 		$family_slug = sanitize_title( $family_name );
 		if ( '' === $family_slug ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'warning',
+				'admin_action',
+				'font_family_create_invalid',
+				'Font family could not be created because the name was invalid.',
+				array(
+					'template_id' => $template_id,
+				)
+			);
 			return new WP_Error( 'acg_font_invalid_name', __( 'Invalid font family name.', 'alynt-certificate-generator' ) );
 		}
 		$fonts = $template_id > 0 ? $this->get_template_fonts( $template_id ) : $this->get_global_fonts();
 		if ( isset( $fonts[ $family_slug ] ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'info',
+				'admin_action',
+				'font_family_create_duplicate',
+				'Font family could not be created because it already exists.',
+				array(
+					'template_id' => $template_id,
+					'family_slug' => $family_slug,
+				)
+			);
 			return new WP_Error( 'acg_font_exists', __( 'Font family already exists.', 'alynt-certificate-generator' ) );
 		}
-		$fonts[ $family_slug ] = array( 'family' => $family_name, 'slug' => $family_slug, 'weights' => array() );
+		$fonts[ $family_slug ] = array(
+			'family'  => $family_name,
+			'slug'    => $family_slug,
+			'weights' => array(),
+		);
 		$template_id > 0 ? \update_post_meta( $template_id, self::META_KEY, wp_json_encode( $fonts ) ) : \update_option( self::OPTION_KEY, $fonts );
-		return array( 'family' => $family_name, 'slug' => $family_slug );
+		$this->clear_fonts_cache();
+		return array(
+			'family' => $family_name,
+			'slug'   => $family_slug,
+		);
+	}
+
+	/**
+	 * Clear per-request merged font registry cache after mutations.
+	 */
+	private function clear_fonts_cache(): void {
+		$this->all_fonts_cache = array();
 	}
 }

@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\AdminUi;
 
+defined( 'ABSPATH' ) || exit;
+
 class Alynt_Certificate_Generator_Admin_Notices {
 	/**
 	 * Render webhook failure notice.
@@ -21,6 +23,6 @@ class Alynt_Certificate_Generator_Admin_Notices {
 
 		delete_transient( 'acg_webhook_failure_notice' );
 
-		echo '<div class="notice notice-error"><p>' . esc_html( $message ) . '</p></div>';
+		echo '<div class="notice notice-error" role="alert"><p>' . esc_html( $message ) . '</p></div>';
 	}
 }

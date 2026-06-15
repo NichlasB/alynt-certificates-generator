@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\AdminUi;
 
+defined( 'ABSPATH' ) || exit;
+
 use Alynt\CertificateGenerator\Services\Alynt_Certificate_Generator_Font_Service;
 
 class Alynt_Certificate_Generator_Template_Admin {
@@ -26,9 +28,25 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 */
 	private $version;
 
+	/**
+	 * Metabox renderer.
+	 *
+	 * @var Alynt_Certificate_Generator_Template_Metabox_Renderer
+	 */
+	private $metabox_renderer;
+
+	/**
+	 * Template meta manager.
+	 *
+	 * @var Alynt_Certificate_Generator_Template_Meta_Manager
+	 */
+	private $meta_manager;
+
 	public function __construct( string $plugin_name, string $version ) {
-		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
+		$this->plugin_name      = $plugin_name;
+		$this->version          = $version;
+		$this->metabox_renderer = new Alynt_Certificate_Generator_Template_Metabox_Renderer();
+		$this->meta_manager     = new Alynt_Certificate_Generator_Template_Meta_Manager();
 	}
 
 	/**
@@ -115,14 +133,15 @@ class Alynt_Certificate_Generator_Template_Admin {
 					'postId'      => get_the_ID(),
 					'restUrl'     => esc_url_raw( rest_url( 'acg/v1' ) ),
 					'restNonce'   => wp_create_nonce( 'wp_rest' ),
+					'i18n'        => $this->get_template_builder_i18n(),
 					'constraints' => array(
-						'maxSize'    => 5 * 1024 * 1024,
-						'minWidth'   => 1000,
-						'minHeight'  => 800,
+						'maxSize'           => 5 * 1024 * 1024,
+						'minWidth'          => 1000,
+						'minHeight'         => 800,
 						'minWidthPortrait'  => 800,
 						'minHeightPortrait' => 1000,
-						'maxWidth'   => 6000,
-						'maxHeight'  => 6000,
+						'maxWidth'          => 6000,
+						'maxHeight'         => 6000,
 					),
 				)
 			);
@@ -141,39 +160,99 @@ class Alynt_Certificate_Generator_Template_Admin {
 	}
 
 	/**
+	 * Get localized strings used by the template builder JavaScript.
+	 *
+	 * @return array<string, string>
+	 */
+	private function get_template_builder_i18n(): array {
+		return array(
+			'addOption'                  => __( '+ Add Option', 'alynt-certificate-generator' ),
+			'align'                      => __( 'Align', 'alynt-certificate-generator' ),
+			'alignCenter'                => __( 'Center', 'alynt-certificate-generator' ),
+			'alignLeft'                  => __( 'Left', 'alynt-certificate-generator' ),
+			'alignRight'                 => __( 'Right', 'alynt-certificate-generator' ),
+			'auto'                       => __( 'Auto', 'alynt-certificate-generator' ),
+			'autoCertificateId'          => __( 'Certificate ID', 'alynt-certificate-generator' ),
+			'autoGenerationDate'         => __( 'Generation Date', 'alynt-certificate-generator' ),
+			'bold'                       => __( 'B', 'alynt-certificate-generator' ),
+			'color'                      => __( 'Color', 'alynt-certificate-generator' ),
+			'confirmRemoveOption'        => __( 'Remove this dropdown option? This action cannot be undone.', 'alynt-certificate-generator' ),
+			/* translators: %s: variable label. */
+			'confirmRemoveVariable'      => __( 'Remove %s from this template? This action cannot be undone.', 'alynt-certificate-generator' ),
+			'customFontsGlobal'          => __( 'Custom Fonts (Global)', 'alynt-certificate-generator' ),
+			'customFontsTemplate'        => __( 'Custom Fonts (Template)', 'alynt-certificate-generator' ),
+			'dateFormatDayFullMonthYear' => __( 'DD Month YYYY', 'alynt-certificate-generator' ),
+			'dateFormatDayMonthYear'     => __( 'DD/MM/YYYY', 'alynt-certificate-generator' ),
+			'dateFormatFullMonthDayYear' => __( 'Month DD, YYYY', 'alynt-certificate-generator' ),
+			'dateFormatIso'              => __( 'YYYY-MM-DD', 'alynt-certificate-generator' ),
+			'dateFormatMonthDayYear'     => __( 'MM/DD/YYYY', 'alynt-certificate-generator' ),
+			'dragToReorder'              => __( 'Drag to reorder', 'alynt-certificate-generator' ),
+			'dropdownOptions'            => __( 'Dropdown Options:', 'alynt-certificate-generator' ),
+			'font'                       => __( 'Font', 'alynt-certificate-generator' ),
+			'format'                     => __( 'Format', 'alynt-certificate-generator' ),
+			'imageMaxHeight'             => __( 'Max H', 'alynt-certificate-generator' ),
+			'imageMaxWidth'              => __( 'Max W', 'alynt-certificate-generator' ),
+			/* translators: %s: variable label. */
+			'labelField'                 => __( 'Label for %s', 'alynt-certificate-generator' ),
+			/* translators: %s: variable label. */
+			'keyField'                   => __( 'Key for %s', 'alynt-certificate-generator' ),
+			/* translators: %d: number of dropdown options. */
+			'optionCountPlural'          => __( '(%d options)', 'alynt-certificate-generator' ),
+			/* translators: %d: number of dropdown options. */
+			'optionCountSingular'        => __( '(%d option)', 'alynt-certificate-generator' ),
+			'optionTextPlaceholder'      => __( 'Option text (shown in dropdown and on certificate)', 'alynt-certificate-generator' ),
+			/* translators: %d: number of dropdown options. */
+			'optionsSummaryPlural'       => __( 'Options: %d (edit below)', 'alynt-certificate-generator' ),
+			/* translators: %d: number of dropdown options. */
+			'optionsSummarySingular'     => __( 'Option: %d (edit below)', 'alynt-certificate-generator' ),
+			'remove'                     => __( 'Remove', 'alynt-certificate-generator' ),
+			'selectCertificateTemplate'  => __( 'Select certificate template', 'alynt-certificate-generator' ),
+			'saveTemplateFailed'         => __( 'Template variables could not be saved.', 'alynt-certificate-generator' ),
+			/* translators: %s: marker position. */
+			'markerPositionUpdated'      => __( 'Marker moved to %s.', 'alynt-certificate-generator' ),
+			/* translators: %s: variable label. */
+			'moveMarkerInstructions'     => __( 'Move %s. Use arrow keys to move by 1 pixel, or Shift plus arrow keys to move by 10 pixels.', 'alynt-certificate-generator' ),
+			'moveVariableDown'           => __( 'Move variable down', 'alynt-certificate-generator' ),
+			'moveVariableUp'             => __( 'Move variable up', 'alynt-certificate-generator' ),
+			'variable'                   => __( 'Variable', 'alynt-certificate-generator' ),
+			/* translators: %d: row position. */
+			'variableMoved'              => __( 'Variable moved to position %d.', 'alynt-certificate-generator' ),
+			'savingTemplate'             => __( 'Saving template variables...', 'alynt-certificate-generator' ),
+			'size'                       => __( 'Size', 'alynt-certificate-generator' ),
+			'systemFonts'                => __( 'System Fonts', 'alynt-certificate-generator' ),
+			'templateSaved'              => __( 'Template variables saved.', 'alynt-certificate-generator' ),
+			/* translators: %s: variable label. */
+			'displayField'               => __( 'Display %s on certificate', 'alynt-certificate-generator' ),
+			/* translators: %s: variable label. */
+			'requiredField'              => __( '%s is required', 'alynt-certificate-generator' ),
+			/* translators: %s: variable label. */
+			'typeField'                  => __( 'Type for %s', 'alynt-certificate-generator' ),
+			'typeAuto'                   => __( 'Auto', 'alynt-certificate-generator' ),
+			'typeDate'                   => __( 'Date', 'alynt-certificate-generator' ),
+			'typeImage'                  => __( 'Image', 'alynt-certificate-generator' ),
+			'typeSelect'                 => __( 'Select', 'alynt-certificate-generator' ),
+			'typeText'                   => __( 'Text', 'alynt-certificate-generator' ),
+			'useThisImage'               => __( 'Use this image', 'alynt-certificate-generator' ),
+			/* translators: %d: variable number. */
+			'variableLabel'              => __( 'Variable %d', 'alynt-certificate-generator' ),
+			'xCoordinate'                => __( 'X:', 'alynt-certificate-generator' ),
+			'yCoordinate'                => __( 'Y:', 'alynt-certificate-generator' ),
+			'italic'                     => __( 'I', 'alynt-certificate-generator' ),
+		);
+	}
+
+	/**
 	 * Render image selection metabox.
 	 *
 	 * @param \WP_Post $post Current post.
 	 */
 	public function render_image_metabox( \WP_Post $post ): void {
-		$image_id   = (int) \get_post_meta( $post->ID, 'acg_template_image_id', true );
+		$image_id    = (int) \get_post_meta( $post->ID, 'acg_template_image_id', true );
 		$orientation = (string) \get_post_meta( $post->ID, 'acg_template_orientation', true );
 		$orientation = '' !== $orientation ? $orientation : 'landscape';
+		$image_url   = $this->get_image_url( $image_id, 'large' );
 
-		$image_url = '';
-		if ( $image_id ) {
-			$image_src = \wp_get_attachment_image_src( $image_id, 'large' );
-			if ( is_array( $image_src ) ) {
-				$image_url = $image_src[0];
-			}
-		}
-
-		\wp_nonce_field( 'acg_template_save', 'acg_template_nonce' );
-
-		echo '<p>' . esc_html__( 'Upload a JPG or PNG (max 5MB, 1000x800 to 6000x6000).', 'alynt-certificate-generator' ) . '</p>';
-		echo '<input type="hidden" id="acg_template_image_id" name="acg_template_image_id" value="' . esc_attr( (string) $image_id ) . '" />';
-		echo '<button type="button" class="button" id="acg_template_select_image">' . esc_html__( 'Select Image', 'alynt-certificate-generator' ) . '</button>';
-		echo '<div id="acg_template_image_preview" style="margin-top:10px;">';
-		if ( '' !== $image_url ) {
-			echo '<img src="' . esc_url( $image_url ) . '" style="max-width:100%;height:auto;" alt="" />';
-		}
-		echo '</div>';
-
-		echo '<p style="margin-top:10px;">' . esc_html__( 'Orientation', 'alynt-certificate-generator' ) . '</p>';
-		echo '<select name="acg_template_orientation" id="acg_template_orientation">';
-		echo '<option value="landscape"' . selected( $orientation, 'landscape', false ) . '>' . esc_html__( 'Landscape', 'alynt-certificate-generator' ) . '</option>';
-		echo '<option value="portrait"' . selected( $orientation, 'portrait', false ) . '>' . esc_html__( 'Portrait', 'alynt-certificate-generator' ) . '</option>';
-		echo '</select>';
+		$this->metabox_renderer->render_image_metabox( $image_id, $orientation, $image_url );
 	}
 
 	/**
@@ -182,56 +261,22 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param \WP_Post $post Current post.
 	 */
 	public function render_variables_metabox( \WP_Post $post ): void {
-		\wp_nonce_field( 'acg_template_save', 'acg_template_nonce', false );
-
-		$image_id = (int) \get_post_meta( $post->ID, 'acg_template_image_id', true );
-		$image_url = '';
-		$image_width = 0;
+		$image_id     = (int) \get_post_meta( $post->ID, 'acg_template_image_id', true );
+		$image_url    = '';
+		$image_width  = 0;
 		$image_height = 0;
+
 		if ( $image_id ) {
 			$image_src = \wp_get_attachment_image_src( $image_id, 'full' );
 			if ( is_array( $image_src ) ) {
-				$image_url   = $image_src[0];
-				$image_width = (int) $image_src[1];
+				$image_url    = $image_src[0];
+				$image_width  = (int) $image_src[1];
 				$image_height = (int) $image_src[2];
 			}
 		}
 
 		$variables_json = (string) \get_post_meta( $post->ID, 'acg_template_variables', true );
-		// DEBUG: Log what we're loading from DB on page render.
-		error_log( 'ACG DEBUG RENDER: Loading variables for post ' . $post->ID . ', length=' . strlen( $variables_json ) );
-		error_log( 'ACG DEBUG RENDER: First 300 chars: ' . substr( $variables_json, 0, 300 ) );
-
-		echo '<input type="hidden" id="acg_template_variables_input" name="acg_template_variables" value="' . esc_attr( $variables_json ) . '" />';
-		echo '<div id="acg-template-builder" data-image-url="' . esc_attr( $image_url ) . '" data-image-width="' . esc_attr( (string) $image_width ) . '" data-image-height="' . esc_attr( (string) $image_height ) . '">';
-		echo '<div class="acg-template-preview">';
-		if ( '' !== $image_url ) {
-			echo '<img id="acg-template-image" src="' . esc_url( $image_url ) . '" alt="" />';
-			echo '<div id="acg-template-overlay" class="acg-template-overlay"></div>';
-		} else {
-			echo '<p>' . esc_html__( 'Select a template image to start positioning variables.', 'alynt-certificate-generator' ) . '</p>';
-		}
-		echo '</div>';
-
-		echo '<div class="acg-template-controls">';
-		echo '<button type="button" class="button" id="acg-add-variable">' . esc_html__( 'Add Variable', 'alynt-certificate-generator' ) . '</button>';
-		echo '</div>';
-
-		echo '<table class="widefat fixed striped acg-variables-table">';
-		echo '<thead><tr>';
-		echo '<th style="width: 30px;"></th>'; // Drag handle column.
-		echo '<th>' . esc_html__( 'Label', 'alynt-certificate-generator' ) . '</th>';
-		echo '<th>' . esc_html__( 'Key', 'alynt-certificate-generator' ) . '</th>';
-		echo '<th>' . esc_html__( 'Type', 'alynt-certificate-generator' ) . '</th>';
-		echo '<th>' . esc_html__( 'Required', 'alynt-certificate-generator' ) . '</th>';
-		echo '<th>' . esc_html__( 'Display', 'alynt-certificate-generator' ) . '</th>';
-		echo '<th>' . esc_html__( 'Style', 'alynt-certificate-generator' ) . '</th>';
-		echo '<th>' . esc_html__( 'Position', 'alynt-certificate-generator' ) . '</th>';
-		echo '<th>' . esc_html__( 'Actions', 'alynt-certificate-generator' ) . '</th>';
-		echo '</tr></thead>';
-		echo '<tbody id="acg-template-variables-body"></tbody>';
-		echo '</table>';
-		echo '</div>';
+		$this->metabox_renderer->render_variables_metabox( $variables_json, $image_url, $image_width, $image_height );
 	}
 
 	/**
@@ -240,54 +285,9 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param \WP_Post $post Current post.
 	 */
 	public function render_access_metabox( \WP_Post $post ): void {
-		\wp_nonce_field( 'acg_template_save', 'acg_template_nonce', false );
-
-		$permissions = $this->get_permissions( $post->ID );
-		$access      = $permissions['access'];
-		$roles       = $permissions['roles'];
-
-		echo '<p>' . esc_html__( 'Choose who can access the frontend form for this template.', 'alynt-certificate-generator' ) . '</p>';
-		echo '<select name="acg_template_access" id="acg_template_access_select">';
-		echo '<option value="any"' . selected( $access, 'any', false ) . '>' . esc_html__( 'Any logged-in user', 'alynt-certificate-generator' ) . '</option>';
-		echo '<option value="roles"' . selected( $access, 'roles', false ) . '>' . esc_html__( 'Specific roles', 'alynt-certificate-generator' ) . '</option>';
-		echo '</select>';
-
-		$roles_style = 'roles' === $access ? 'margin-top:10px;' : 'margin-top:10px;display:none;';
-		echo '<div class="acg-template-roles" id="acg_template_roles_wrap" style="' . esc_attr( $roles_style ) . '">';
-		foreach ( \wp_roles()->roles as $role_key => $role ) {
-			$checked = in_array( $role_key, $roles, true );
-			printf(
-				'<label style="display:block;margin-bottom:4px;"><input type="checkbox" name="acg_template_roles[]" value="%1$s" %2$s /> %3$s</label>',
-				esc_attr( $role_key ),
-				checked( $checked, true, false ),
-				esc_html( $role['name'] )
-			);
-		}
-		echo '</div>';
-
-		?>
-		<script>
-		(function() {
-			var select = document.getElementById('acg_template_access_select');
-			var rolesWrap = document.getElementById('acg_template_roles_wrap');
-			console.log('ACG Form Access: select=', select, 'rolesWrap=', rolesWrap);
-			if (!select || !rolesWrap) {
-				console.log('ACG Form Access: Elements not found, aborting');
-				return;
-			}
-			
-			select.addEventListener('change', function() {
-				console.log('ACG Form Access: change event, value=', select.value);
-				if (select.value === 'roles') {
-					rolesWrap.style.display = 'block';
-				} else {
-					rolesWrap.style.display = 'none';
-				}
-			});
-			console.log('ACG Form Access: Event listener attached');
-		})();
-		</script>
-		<?php
+		$this->metabox_renderer->render_access_metabox(
+			$this->meta_manager->get_permissions( $post->ID )
+		);
 	}
 
 	/**
@@ -296,36 +296,10 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param \WP_Post $post Current post.
 	 */
 	public function render_webhook_metabox( \WP_Post $post ): void {
-		\wp_nonce_field( 'acg_template_save', 'acg_template_nonce', false );
-
-		$settings = $this->get_webhook_settings( $post->ID );
-		$incoming = $settings['incoming'];
-		$outgoing = $settings['outgoing'];
-
-		$incoming_url = rest_url( 'acg/v1/templates/' . $post->ID . '/incoming' );
-
-		echo '<p><strong>' . esc_html__( 'Incoming Webhook URL', 'alynt-certificate-generator' ) . '</strong></p>';
-		echo '<code>' . esc_html( $incoming_url ) . '</code>';
-
-		echo '<p style="margin-top:12px;"><label for="acg_webhook_api_key">' . esc_html__( 'API Key', 'alynt-certificate-generator' ) . '</label></p>';
-		echo '<input type="text" class="widefat" name="acg_webhook_api_key" id="acg_webhook_api_key" value="' . esc_attr( $incoming['api_key'] ) . '" />';
-
-		echo '<p><label for="acg_webhook_signature_secret">' . esc_html__( 'Signature Secret (optional)', 'alynt-certificate-generator' ) . '</label></p>';
-		echo '<input type="text" class="widefat" name="acg_webhook_signature_secret" id="acg_webhook_signature_secret" value="' . esc_attr( $incoming['signature_secret'] ) . '" />';
-
-		echo '<p><label for="acg_webhook_rate_limit">' . esc_html__( 'Rate Limit Override (per minute)', 'alynt-certificate-generator' ) . '</label></p>';
-		echo '<input type="number" class="small-text" name="acg_webhook_rate_limit" id="acg_webhook_rate_limit" value="' . esc_attr( (string) $incoming['rate_limit'] ) . '" min="0" />';
-		echo '<p class="description">' . esc_html__( 'Leave 0 to use the global rate limit.', 'alynt-certificate-generator' ) . '</p>';
-
-		echo '<hr />';
-		echo '<p><strong>' . esc_html__( 'Outgoing Webhook', 'alynt-certificate-generator' ) . '</strong></p>';
-		echo '<p><label for="acg_webhook_outgoing_url">' . esc_html__( 'Webhook URL', 'alynt-certificate-generator' ) . '</label></p>';
-		echo '<input type="url" class="widefat" name="acg_webhook_outgoing_url" id="acg_webhook_outgoing_url" value="' . esc_attr( $outgoing['url'] ) . '" />';
-
-		echo '<p style="margin-top:8px;">';
-		echo '<label><input type="checkbox" name="acg_webhook_outgoing_enabled" value="1" ' . checked( $outgoing['enabled'], true, false ) . ' /> ';
-		echo esc_html__( 'Enable outgoing webhook', 'alynt-certificate-generator' ) . '</label>';
-		echo '</p>';
+		$this->metabox_renderer->render_webhook_metabox(
+			$post->ID,
+			$this->meta_manager->get_webhook_settings( $post->ID )
+		);
 	}
 
 	/**
@@ -334,75 +308,12 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param \WP_Post $post Current post.
 	 */
 	public function render_fonts_metabox( \WP_Post $post ): void {
-		$font_service = new Alynt_Certificate_Generator_Font_Service();
-		$global_fonts = $font_service->get_global_fonts();
-		$template_fonts = $font_service->get_template_fonts( $post->ID );
+		$font_service    = new Alynt_Certificate_Generator_Font_Service();
+		$global_fonts    = $font_service->get_global_fonts();
+		$template_fonts  = $font_service->get_template_fonts( $post->ID );
 		$allowed_weights = Alynt_Certificate_Generator_Font_Service::ALLOWED_WEIGHTS;
 
-		echo '<div class="acg-template-fonts">';
-
-		// Show global fonts count.
-		$global_count = count( $global_fonts );
-		echo '<p>';
-		printf(
-			/* translators: %d: number of global fonts */
-			esc_html__( '%d global font(s) available.', 'alynt-certificate-generator' ),
-			(int) $global_count
-		);
-		echo ' <a href="' . esc_url( admin_url( 'admin.php?page=alynt-certificate-generator&tab=fonts' ) ) . '">';
-		echo esc_html__( 'Manage Global Fonts', 'alynt-certificate-generator' );
-		echo '</a></p>';
-
-		echo '<hr />';
-
-		// Template-specific fonts.
-		echo '<h4>' . esc_html__( 'Template-Specific Fonts', 'alynt-certificate-generator' ) . '</h4>';
-		echo '<p class="description">' . esc_html__( 'Upload fonts that are only available for this template.', 'alynt-certificate-generator' ) . '</p>';
-
-		if ( ! empty( $template_fonts ) ) {
-			echo '<ul style="margin: 10px 0;">';
-			foreach ( $template_fonts as $family_slug => $family_data ) {
-				$weights_list = array();
-				foreach ( $family_data['weights'] as $weight_key => $weight_data ) {
-					$weights_list[] = $allowed_weights[ $weight_key ] ?? $weight_key;
-				}
-				echo '<li><strong>' . esc_html( $family_data['family'] ) . '</strong>: ' . esc_html( implode( ', ', $weights_list ) ) . '</li>';
-			}
-			echo '</ul>';
-		} else {
-			echo '<p><em>' . esc_html__( 'No template-specific fonts uploaded.', 'alynt-certificate-generator' ) . '</em></p>';
-		}
-
-		// Quick upload form for template-specific font.
-		echo '<div style="margin-top: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd;">';
-		echo '<p><strong>' . esc_html__( 'Quick Upload', 'alynt-certificate-generator' ) . '</strong></p>';
-
-		echo '<p>';
-		echo '<label>' . esc_html__( 'Family Name:', 'alynt-certificate-generator' ) . '<br />';
-		echo '<input type="text" name="acg_template_font_family" class="widefat" placeholder="' . esc_attr__( 'e.g., Roboto', 'alynt-certificate-generator' ) . '" />';
-		echo '</label>';
-		echo '</p>';
-
-		echo '<p>';
-		echo '<label>' . esc_html__( 'Weight:', 'alynt-certificate-generator' ) . '<br />';
-		echo '<select name="acg_template_font_weight" class="widefat">';
-		foreach ( $allowed_weights as $weight_key => $weight_label ) {
-			echo '<option value="' . esc_attr( $weight_key ) . '">' . esc_html( $weight_label ) . '</option>';
-		}
-		echo '</select>';
-		echo '</label>';
-		echo '</p>';
-
-		echo '<p>';
-		echo '<label>' . esc_html__( 'Font File (TTF/OTF):', 'alynt-certificate-generator' ) . '<br />';
-		echo '<input type="file" name="acg_template_font_file" accept=".ttf,.otf" class="widefat" />';
-		echo '</label>';
-		echo '</p>';
-
-		echo '<p class="description">' . esc_html__( 'The font will be uploaded when you save/update the template.', 'alynt-certificate-generator' ) . '</p>';
-		echo '</div>';
-
-		echo '</div>';
+		$this->metabox_renderer->render_fonts_metabox( $global_fonts, $template_fonts, $allowed_weights );
 	}
 
 	/**
@@ -411,334 +322,29 @@ class Alynt_Certificate_Generator_Template_Admin {
 	 * @param int $post_id Post ID.
 	 */
 	public function save_template_meta( int $post_id ): void {
-		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-			return;
-		}
-
-		if ( ! isset( $_POST['acg_template_nonce'] ) || ! \wp_verify_nonce( wp_unslash( $_POST['acg_template_nonce'] ), 'acg_template_save' ) ) {
-			return;
-		}
-
-		if ( ! \current_user_can( ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE, $post_id ) ) {
-			return;
-		}
-
-		// Only save image and orientation if form fields are present.
-		if ( isset( $_POST['acg_template_image_id'] ) ) {
-			$image_id = absint( wp_unslash( $_POST['acg_template_image_id'] ) );
-			$orientation = isset( $_POST['acg_template_orientation'] ) ? sanitize_key( wp_unslash( $_POST['acg_template_orientation'] ) ) : 'landscape';
-
-			if ( '' === $orientation ) {
-				$orientation = 'landscape';
-			}
-
-			$validation = $this->validate_template_image( $image_id, $orientation );
-			if ( ! $validation['valid'] ) {
-				$this->store_admin_error( $post_id, $validation['message'] );
-			} else {
-				\update_post_meta( $post_id, 'acg_template_image_id', $image_id );
-			}
-
-			if ( in_array( $orientation, array( 'landscape', 'portrait' ), true ) ) {
-				\update_post_meta( $post_id, 'acg_template_orientation', $orientation );
-			}
-		}
-
-		if ( isset( $_POST['acg_template_variables'] ) ) {
-			$variables_json = wp_unslash( $_POST['acg_template_variables'] );
-			// DEBUG: Log what we're saving.
-			error_log( 'ACG DEBUG: Saving variables for post ' . $post_id );
-			error_log( 'ACG DEBUG: Raw POST value length: ' . strlen( $_POST['acg_template_variables'] ) );
-			error_log( 'ACG DEBUG: After wp_unslash length: ' . strlen( $variables_json ) );
-			error_log( 'ACG DEBUG: First 500 chars: ' . substr( $variables_json, 0, 500 ) );
-			\update_post_meta( $post_id, 'acg_template_variables', $variables_json );
-			// DEBUG: Verify what was saved.
-			$saved = \get_post_meta( $post_id, 'acg_template_variables', true );
-			error_log( 'ACG DEBUG: After save, retrieved length: ' . strlen( $saved ) );
-		}
-
-		$this->save_permissions( $post_id );
-		$this->save_webhook_settings( $post_id );
-		$this->save_template_fonts( $post_id );
+		$this->meta_manager->save_template_meta( $post_id );
 	}
 
 	/**
 	 * Display admin errors for template save.
 	 */
 	public function render_admin_errors(): void {
-		if ( ! isset( $_GET['post'] ) ) {
-			return;
-		}
-
-		$post_id = absint( wp_unslash( $_GET['post'] ) );
-		if ( ! $post_id ) {
-			return;
-		}
-
-		$transient_key = 'acg_template_error_' . $post_id;
-		$message       = get_transient( $transient_key );
-		if ( ! $message ) {
-			return;
-		}
-
-		delete_transient( $transient_key );
-
-		echo '<div class="notice notice-error"><p>' . esc_html( $message ) . '</p></div>';
+		$this->meta_manager->render_admin_errors();
 	}
 
 	/**
-	 * Save permissions data.
+	 * Get an image URL for an attachment.
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int    $image_id Attachment ID.
+	 * @param string $size     Image size.
+	 * @return string
 	 */
-	private function save_permissions( int $post_id ): void {
-		// Only save if the form field is present to avoid wiping data on REST saves.
-		if ( ! isset( $_POST['acg_template_access'] ) ) {
-			return;
+	private function get_image_url( int $image_id, string $size ): string {
+		if ( ! $image_id ) {
+			return '';
 		}
 
-		$access = sanitize_key( wp_unslash( $_POST['acg_template_access'] ) );
-		$roles  = isset( $_POST['acg_template_roles'] ) ? (array) wp_unslash( $_POST['acg_template_roles'] ) : array();
-
-		$roles = array_map( 'sanitize_key', $roles );
-		if ( 'roles' !== $access ) {
-			$roles = array();
-		}
-
-		\update_post_meta(
-			$post_id,
-			'acg_template_permissions',
-			wp_json_encode(
-				array(
-					'access' => $access,
-					'roles'  => $roles,
-				)
-			)
-		);
-	}
-
-	/**
-	 * Get permissions data.
-	 *
-	 * @param int $post_id Post ID.
-	 * @return array
-	 */
-	private function get_permissions( int $post_id ): array {
-		$raw = (string) \get_post_meta( $post_id, 'acg_template_permissions', true );
-		$decoded = json_decode( $raw, true );
-
-		if ( ! is_array( $decoded ) ) {
-			return array(
-				'access' => 'any',
-				'roles'  => array(),
-			);
-		}
-
-		return array(
-			'access' => isset( $decoded['access'] ) ? (string) $decoded['access'] : 'any',
-			'roles'  => isset( $decoded['roles'] ) && is_array( $decoded['roles'] ) ? $decoded['roles'] : array(),
-		);
-	}
-
-	/**
-	 * Save webhook settings.
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	private function save_webhook_settings( int $post_id ): void {
-		// Only save if the form field is present to avoid wiping data on REST saves.
-		if ( ! isset( $_POST['acg_webhook_api_key'] ) ) {
-			return;
-		}
-
-		$current = $this->get_webhook_settings( $post_id );
-		$api_key = sanitize_text_field( wp_unslash( $_POST['acg_webhook_api_key'] ) );
-		$signature_secret = isset( $_POST['acg_webhook_signature_secret'] ) ? sanitize_text_field( wp_unslash( $_POST['acg_webhook_signature_secret'] ) ) : $current['incoming']['signature_secret'];
-		$rate_limit = isset( $_POST['acg_webhook_rate_limit'] ) ? absint( wp_unslash( $_POST['acg_webhook_rate_limit'] ) ) : $current['incoming']['rate_limit'];
-
-		if ( '' === $api_key ) {
-			$api_key = wp_generate_password( 32, false, false );
-		}
-
-		$outgoing_url = isset( $_POST['acg_webhook_outgoing_url'] ) ? esc_url_raw( wp_unslash( $_POST['acg_webhook_outgoing_url'] ) ) : $current['outgoing']['url'];
-		$outgoing_enabled = isset( $_POST['acg_webhook_outgoing_enabled'] );
-
-		\update_post_meta(
-			$post_id,
-			'acg_template_webhook_settings',
-			wp_json_encode(
-				array(
-					'incoming' => array(
-						'api_key'          => $api_key,
-						'signature_secret' => $signature_secret,
-						'rate_limit'       => $rate_limit,
-					),
-					'outgoing' => array(
-						'url'     => $outgoing_url,
-						'enabled' => $outgoing_enabled,
-					),
-				)
-			)
-		);
-	}
-
-	/**
-	 * Save template-specific fonts.
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	private function save_template_fonts( int $post_id ): void {
-		// Check if font upload data is present.
-		if ( ! isset( $_POST['acg_template_font_family'] ) || empty( $_POST['acg_template_font_family'] ) ) {
-			return;
-		}
-
-		if ( ! isset( $_FILES['acg_template_font_file'] ) || empty( $_FILES['acg_template_font_file']['tmp_name'] ) ) {
-			return;
-		}
-
-		$family_name = sanitize_text_field( wp_unslash( $_POST['acg_template_font_family'] ) );
-		$weight = isset( $_POST['acg_template_font_weight'] ) ? sanitize_key( wp_unslash( $_POST['acg_template_font_weight'] ) ) : 'regular';
-
-		if ( '' === $family_name ) {
-			return;
-		}
-
-		$font_service = new Alynt_Certificate_Generator_Font_Service();
-		$result = $font_service->upload_font(
-			$_FILES['acg_template_font_file'],
-			$family_name,
-			$weight,
-			$post_id
-		);
-
-		if ( is_wp_error( $result ) ) {
-			$this->store_admin_error( $post_id, $result->get_error_message() );
-		}
-	}
-
-	/**
-	 * Get webhook settings.
-	 *
-	 * @param int $post_id Post ID.
-	 * @return array
-	 */
-	private function get_webhook_settings( int $post_id ): array {
-		$raw = (string) \get_post_meta( $post_id, 'acg_template_webhook_settings', true );
-		$decoded = json_decode( $raw, true );
-
-		$incoming = array(
-			'api_key'          => '',
-			'signature_secret' => '',
-			'rate_limit'       => 0,
-		);
-		$outgoing = array(
-			'url'     => '',
-			'enabled' => false,
-		);
-
-		if ( is_array( $decoded ) ) {
-			if ( isset( $decoded['incoming'] ) && is_array( $decoded['incoming'] ) ) {
-				$incoming = array_merge( $incoming, $decoded['incoming'] );
-			}
-			if ( isset( $decoded['outgoing'] ) && is_array( $decoded['outgoing'] ) ) {
-				$outgoing = array_merge( $outgoing, $decoded['outgoing'] );
-			}
-		}
-
-		return array(
-			'incoming' => $incoming,
-			'outgoing' => $outgoing,
-		);
-	}
-
-	/**
-	 * Validate template image.
-	 *
-	 * @param int    $image_id   Attachment ID.
-	 * @param string $orientation Orientation.
-	 * @return array<string, mixed>
-	 */
-	private function validate_template_image( int $image_id, string $orientation ): array {
-		if ( 0 === $image_id ) {
-			return array(
-				'valid'   => true,
-				'message' => '',
-			);
-		}
-
-		$file_path = \get_attached_file( $image_id );
-		if ( empty( $file_path ) || ! file_exists( $file_path ) ) {
-			return array(
-				'valid'   => false,
-				'message' => __( 'Selected image file not found.', 'alynt-certificate-generator' ),
-			);
-		}
-
-		$file_type = \wp_check_filetype( $file_path );
-		$allowed   = array( 'jpg', 'jpeg', 'png' );
-		if ( empty( $file_type['ext'] ) || ! in_array( strtolower( $file_type['ext'] ), $allowed, true ) ) {
-			return array(
-				'valid'   => false,
-				'message' => __( 'Template image must be a JPG or PNG file.', 'alynt-certificate-generator' ),
-			);
-		}
-
-		$file_size = filesize( $file_path );
-		if ( $file_size && $file_size > 5 * 1024 * 1024 ) {
-			return array(
-				'valid'   => false,
-				'message' => __( 'Template image exceeds the 5MB size limit.', 'alynt-certificate-generator' ),
-			);
-		}
-
-		$metadata = \wp_get_attachment_metadata( $image_id );
-		$width    = isset( $metadata['width'] ) ? (int) $metadata['width'] : 0;
-		$height   = isset( $metadata['height'] ) ? (int) $metadata['height'] : 0;
-
-		if ( $width < 1 || $height < 1 ) {
-			return array(
-				'valid'   => false,
-				'message' => __( 'Template image dimensions could not be read.', 'alynt-certificate-generator' ),
-			);
-		}
-
-		if ( $width > 6000 || $height > 6000 ) {
-			return array(
-				'valid'   => false,
-				'message' => __( 'Template image exceeds the 6000x6000 maximum resolution.', 'alynt-certificate-generator' ),
-			);
-		}
-
-		if ( 'portrait' === $orientation ) {
-			if ( $width < 800 || $height < 1000 ) {
-				return array(
-					'valid'   => false,
-					'message' => __( 'Portrait templates must be at least 800x1000 pixels.', 'alynt-certificate-generator' ),
-				);
-			}
-		} else {
-			if ( $width < 1000 || $height < 800 ) {
-				return array(
-					'valid'   => false,
-					'message' => __( 'Landscape templates must be at least 1000x800 pixels.', 'alynt-certificate-generator' ),
-				);
-			}
-		}
-
-		return array(
-			'valid'   => true,
-			'message' => '',
-		);
-	}
-
-	/**
-	 * Store admin error message for next load.
-	 *
-	 * @param int    $post_id Post ID.
-	 * @param string $message Error message.
-	 */
-	private function store_admin_error( int $post_id, string $message ): void {
-		set_transient( 'acg_template_error_' . $post_id, $message, 30 );
+		$image_src = \wp_get_attachment_image_src( $image_id, $size );
+		return is_array( $image_src ) ? (string) $image_src[0] : '';
 	}
 }

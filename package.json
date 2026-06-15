@@ -1,21 +1,24 @@
 {
-  "name": "alynt-certificate-generator",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Alynt Certificate Generator plugin assets",
-  "type": "module",
-  "scripts": {
-    "build": "node scripts/build.mjs",
-    "dev": "node scripts/build.mjs --watch",
-    "deploy": "bash deploy.sh",
-    "deploy:watch": "nodemon --watch . --ext php,js,css,html --ignore node_modules/ --ignore .git/ --ignore scripts/ --delay 2 --exec \"bash deploy.sh\"",
-    "dev:all": "concurrently --names \"build,deploy\" --prefix-colors \"cyan,magenta\" \"npm run dev\" \"npm run deploy:watch\"",
-    "lint": "./vendor/bin/phpcs --standard=WordPress .",
-    "lint:fix": "./vendor/bin/phpcbf --standard=WordPress ."
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.0",
-    "esbuild": "^0.24.0",
-    "nodemon": "^3.1.0"
-  }
+    "name": "alynt-certificates-generator",
+    "version": "0.2.3",
+    "private": true,
+    "description": "Alynt Certificate Generator plugin assets",
+    "type": "module",
+    "scripts": {
+        "build": "node scripts/build.mjs",
+        "dev": "node scripts/build.mjs --watch",
+        "deploy": "bash deploy.sh",
+        "deploy:watch": "nodemon --watch . --ext php,js,css,html --ignore node_modules/ --ignore .git/ --ignore scripts/ --delay 2 --exec \"bash deploy.sh\"",
+        "dev:all": "concurrently --names \"build,deploy\" --prefix-colors \"cyan,magenta\" \"npm run dev\" \"npm run deploy:watch\"",
+        "lint": "php ./vendor/bin/phpcs --standard=.phpcs.xml .",
+        "lint:fix": "php ./vendor/bin/phpcbf --standard=.phpcs.xml .",
+        "test": "php ./vendor/bin/phpunit --do-not-cache-result",
+        "test:coverage": "php ./vendor/bin/phpunit --coverage-html=coverage/",
+        "pot": "wp i18n make-pot . languages/alynt-certificate-generator.pot"
+    },
+    "devDependencies": {
+        "concurrently": "^10.0.3",
+        "esbuild": "^0.28.1",
+        "nodemon": "^3.1.0"
+    }
 }

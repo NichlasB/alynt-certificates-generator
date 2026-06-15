@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # Copy this file to deploy.sh and customize deploy.sh locally.
 # Keep deploy.sh gitignored; commit only deploy.example.sh.
 set -e
@@ -6,7 +6,7 @@ set -e
 REMOTE_HOST="your-ssh-alias"
 REMOTE_PATH="/var/www/your-site/htdocs/wp-content/plugins/alynt-certificates-generator"
 
-echo "🚀 Deploying alynt-certificate-generator to staging..."
+echo "Deploying alynt-certificates-generator to staging..."
 
 rsync -avz --delete \
   --exclude=".git" \
@@ -34,14 +34,15 @@ rsync -avz --delete \
   --exclude="package-lock.json" \
   --exclude="composer.json" \
   --exclude="composer.lock" \
+  --exclude="composer.phar" \
   --exclude="deploy.sh" \
   --exclude="deploy.example.sh" \
   --exclude="session-context.tmp.md" \
+  --exclude="session-handoff.tmp.md" \
+  --exclude="implementation-plan.tmp.md" \
   --exclude="*.map" \
-  --exclude="composer.phar" \
-  --exclude="SETUP_NOTES_WINDOWS.txt" \
   ./ \
   "${REMOTE_HOST}:${REMOTE_PATH}/"
 
-echo "✅ Deployment complete!"
-echo "📍 Remote path: ${REMOTE_PATH}"
+echo "Deployment complete!"
+echo "Remote path: ${REMOTE_PATH}"

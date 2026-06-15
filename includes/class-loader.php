@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator;
 
+defined( 'ABSPATH' ) || exit;
+
 class Alynt_Certificate_Generator_Loader {
 	/**
 	 * Registered actions.
@@ -33,7 +35,7 @@ class Alynt_Certificate_Generator_Loader {
 
 	public function __construct( string $base_dir = '' ) {
 		$this->base_dir = '' !== $base_dir
-			? rtrim( $base_dir, "/\\" ) . DIRECTORY_SEPARATOR
+			? rtrim( $base_dir, '/\\' ) . DIRECTORY_SEPARATOR
 			: dirname( __DIR__ ) . DIRECTORY_SEPARATOR;
 
 		$this->register_autoloader();
@@ -49,16 +51,16 @@ class Alynt_Certificate_Generator_Loader {
 	/**
 	 * Autoload plugin classes.
 	 *
-	 * @param string $class Fully-qualified class name.
+	 * @param string $class_name Fully-qualified class name.
 	 */
-	public function autoload( string $class ): void {
+	public function autoload( string $class_name ): void {
 		$prefix = __NAMESPACE__ . '\\';
 
-		if ( 0 !== strpos( $class, $prefix ) ) {
+		if ( 0 !== strpos( $class_name, $prefix ) ) {
 			return;
 		}
 
-		$relative_class = substr( $class, strlen( $prefix ) );
+		$relative_class = substr( $class_name, strlen( $prefix ) );
 		$file           = $this->get_class_file_path( $relative_class );
 
 		if ( null !== $file && file_exists( $file ) ) {

@@ -11,6 +11,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Services;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 use TCPDF_FONTS;
 
@@ -63,7 +65,17 @@ class Alynt_Certificate_Generator_Font_Converter {
 
 		$this->create_security_files( $fonts_dir );
 
-		return is_dir( $fonts_dir ) && is_writable( $fonts_dir );
+		$ready = is_dir( $fonts_dir ) && is_writable( $fonts_dir );
+		if ( ! $ready ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'error',
+				'filesystem',
+				'font_directory_unwritable',
+				'Custom font directory could not be created or written.'
+			);
+		}
+
+		return $ready;
 	}
 
 	/**
@@ -106,7 +118,7 @@ class Alynt_Certificate_Generator_Font_Converter {
 		}
 
 		$family_slug = sanitize_title( $family_slug );
-		$weight = sanitize_key( $weight );
+		$weight      = sanitize_key( $weight );
 
 		if ( ! $this->validator->is_valid_weight( $weight ) ) {
 			return new WP_Error( 'acg_font_invalid_weight', __( 'Invalid font weight.', 'alynt-certificate-generator' ) );
@@ -120,16 +132,37 @@ class Alynt_Certificate_Generator_Font_Converter {
 
 		// Generate TCPDF font name and copy TTF file.
 		$tcpdf_name = $family_slug . '_' . $weight;
-		$ttf_dest = $family_dir . $tcpdf_name . '.ttf';
+		$ttf_dest   = $family_dir . $tcpdf_name . '.ttf';
 
 		if ( ! copy( $ttf_path, $ttf_dest ) ) {
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'error',
+				'filesystem',
+				'font_copy_failed',
+				'Uploaded font file could not be copied into plugin storage.',
+				array(
+					'family_slug' => $family_slug,
+					'weight'      => $weight,
+				)
+			);
 			return new WP_Error( 'acg_font_copy_error', __( 'Cannot copy font file.', 'alynt-certificate-generator' ) );
 		}
 
 		// Convert using TCPDF_FONTS.
 		$font_file = $this->convert_with_tcpdf( $ttf_dest, $family_dir );
 		if ( is_wp_error( $font_file ) ) {
-			@unlink( $ttf_dest );
+			wp_delete_file( $ttf_dest );
+			Alynt_Certificate_Generator_Diagnostics_Logger::log(
+				'error',
+				'filesystem',
+				'font_tcpdf_convert_failed',
+				'Uploaded font could not be converted by TCPDF.',
+				array(
+					'family_slug' => $family_slug,
+					'weight'      => $weight,
+					'error_code'  => $font_file->get_error_code(),
+				)
+			);
 			return $font_file;
 		}
 
@@ -186,7 +219,7 @@ class Alynt_Certificate_Generator_Font_Converter {
 
 		foreach ( $files_to_delete as $file ) {
 			if ( file_exists( $file ) ) {
-				@unlink( $file );
+				wp_delete_file( $file );
 			}
 		}
 	}
@@ -211,7 +244,7 @@ class Alynt_Certificate_Generator_Font_Converter {
 	public function cleanup_empty_directory( string $family_slug ): void {
 		$family_dir = $this->get_fonts_dir() . $family_slug . '/';
 		if ( is_dir( $family_dir ) ) {
-			@rmdir( $family_dir );
+			rmdir( $family_dir );
 		}
 	}
 
@@ -231,10 +264,10 @@ class Alynt_Certificate_Generator_Font_Converter {
 			if ( is_dir( $path ) ) {
 				$this->delete_directory( $path );
 			} else {
-				@unlink( $path );
+				wp_delete_file( $path );
 			}
 		}
 
-		@rmdir( $dir );
+		rmdir( $dir );
 	}
 }

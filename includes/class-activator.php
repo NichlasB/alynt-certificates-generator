@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator;
 
+defined( 'ABSPATH' ) || exit;
+
 use Alynt\CertificateGenerator\Database\Alynt_Certificate_Generator_Database;
 
 class Alynt_Certificate_Generator_Activator {

@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Services;
 
+defined( 'ABSPATH' ) || exit;
+
 use Alynt\CertificateGenerator\Database\Alynt_Certificate_Generator_Certificate_Log;
 use WP_Error;
 
@@ -38,13 +40,16 @@ class Alynt_Certificate_Generator_Email_Service {
 			return new WP_Error( 'acg_email_template_missing', __( 'Template ID missing for email dispatch.', 'alynt-certificate-generator' ) );
 		}
 
-		$placeholders = $this->build_placeholders( $log_entry, $variables );
-		$email_templates = $this->get_email_templates( $template_id );
+		$placeholders       = $this->build_placeholders( $log_entry, $variables );
+		$email_template_ids = $this->get_email_template_ids( $template_id );
+		if ( ! empty( $email_template_ids ) ) {
+			\update_postmeta_cache( $email_template_ids );
+		}
 
 		$status = array();
-		foreach ( $email_templates as $email_template ) {
-			$status[ $email_template->ID ] = $this->send_template_email(
-				$email_template->ID,
+		foreach ( $email_template_ids as $email_template_id ) {
+			$status[ $email_template_id ] = $this->send_template_email(
+				$email_template_id,
 				$placeholders,
 				$log_entry,
 				$skip_notifications
@@ -52,36 +57,43 @@ class Alynt_Certificate_Generator_Email_Service {
 		}
 
 		if ( isset( $log_entry['id'] ) ) {
-			$this->log->update_email_status( (int) $log_entry['id'], $status );
+			$updated = $this->log->update_email_status( (int) $log_entry['id'], $status );
+			if ( is_wp_error( $updated ) ) {
+				return $updated;
+			}
 		}
 
 		return $status;
 	}
 
 	/**
-	 * Get email templates for a certificate template.
+	 * Get email template IDs for a certificate template.
 	 *
 	 * @param int $template_id Certificate template ID.
-	 * @return array
+	 * @return int[]
 	 */
-	private function get_email_templates( int $template_id ): array {
-		return \get_posts(
+	private function get_email_template_ids( int $template_id ): array {
+		$ids = \get_posts(
 			array(
-				'post_type'      => 'acg_email_template',
-				'post_status'    => 'any',
-				'numberposts'    => -1,
-				'fields'         => 'all',
-				'meta_query'     => array(
+				'post_type'              => 'acg_email_template',
+				'post_status'            => 'any',
+				'numberposts'            => -1,
+				'fields'                 => 'ids',
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Email templates are tied to certificate templates by registered post meta.
+				'meta_query'             => array(
 					array(
 						'key'   => 'acg_email_template_id',
 						'value' => $template_id,
 					),
 				),
-				'no_found_rows'  => true,
-				'cache_results'  => false,
-				'suppress_filters' => true,
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => true,
+				'update_post_term_cache' => false,
+				'suppress_filters'       => true,
 			)
 		);
+
+		return array_map( 'intval', $ids );
 	}
 
 	/**
@@ -124,7 +136,7 @@ class Alynt_Certificate_Generator_Email_Service {
 			);
 		}
 
-		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+		$headers    = array( 'Content-Type: text/html; charset=UTF-8' );
 		$from_name  = (string) $this->get_setting( 'email_from_name', '' );
 		$from_email = (string) $this->get_setting( 'email_from_address', '' );
 		if ( '' !== $from_name && '' !== $from_email ) {
@@ -145,9 +157,9 @@ class Alynt_Certificate_Generator_Email_Service {
 		}
 
 		return array(
-			'status'   => 'sent',
-			'message'  => '',
-			'sent_at'  => current_time( 'mysql' ),
+			'status'  => 'sent',
+			'message' => '',
+			'sent_at' => current_time( 'mysql' ),
 		);
 	}
 
@@ -171,7 +183,7 @@ class Alynt_Certificate_Generator_Email_Service {
 		}
 
 		if ( isset( $log_entry['download_token'], $log_entry['certificate_id'] ) ) {
-			$endpoint = sprintf(
+			$endpoint                     = sprintf(
 				'acg/v1/certificates/%s/download',
 				rawurlencode( (string) $log_entry['certificate_id'] )
 			);
@@ -228,13 +240,13 @@ class Alynt_Certificate_Generator_Email_Service {
 	 * Get a plugin setting.
 	 *
 	 * @param string $key Setting key.
-	 * @param mixed  $default Default value.
+	 * @param mixed  $default_value Default value.
 	 * @return mixed
 	 */
-	private function get_setting( string $key, $default ) {
+	private function get_setting( string $key, $default_value ) {
 		$settings = \get_option( ALYNT_CERTIFICATE_GENERATOR_SETTINGS_OPTION, array() );
 		if ( ! is_array( $settings ) || ! array_key_exists( $key, $settings ) ) {
-			return $default;
+			return $default_value;
 		}
 
 		return $settings[ $key ];

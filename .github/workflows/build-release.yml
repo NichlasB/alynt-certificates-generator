@@ -10,10 +10,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -22,58 +22,66 @@ jobs:
           tools: composer:v2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
+          cache: npm
 
       - name: Install Composer dependencies (production)
         run: composer install --no-dev --optimize-autoloader --no-interaction
 
-      - name: Check for package.json and install npm dependencies
+      - name: Install npm dependencies and build assets
         run: |
-          if [ -f "package.json" ]; then
-            npm install
-            npm run build || echo "No build script, skipping"
+          if [ -f "package-lock.json" ]; then
+            npm ci
           else
-            echo "No package.json found, skipping npm steps"
+            npm install
           fi
+          npm run build
 
       - name: Create plugin zip
+        id: package
         run: |
           PLUGIN_SLUG="alynt-certificates-generator"
           VERSION="${{ github.event.release.tag_name }}"
-          
-          # Create build directory
+
           mkdir -p build/${PLUGIN_SLUG}
-          
-          # Copy plugin files (exclude dev files)
+
           rsync -av --exclude='.git' \
                     --exclude='.github' \
                     --exclude='node_modules' \
                     --exclude='tests' \
                     --exclude='scripts' \
+                    --exclude='build' \
                     --exclude='.gitignore' \
                     --exclude='.gitattributes' \
                     --exclude='.phpcs.xml' \
                     --exclude='.eslintrc.json' \
+                    --exclude='.editorconfig' \
                     --exclude='phpunit.xml' \
+                    --exclude='phpunit.xml.dist' \
                     --exclude='composer.json' \
                     --exclude='composer.lock' \
+                    --exclude='composer.phar' \
                     --exclude='package.json' \
                     --exclude='package-lock.json' \
                     --exclude='*.map' \
                     --exclude='RELEASE-*.md' \
+                    --exclude='deploy.sh' \
+                    --exclude='deploy.example.sh' \
+                    --exclude='session-context.tmp.md' \
+                    --exclude='session-handoff.tmp.md' \
+                    --exclude='implementation-plan.tmp.md' \
                     ./ build/${PLUGIN_SLUG}/
-          
-          # Create zip
+
           cd build
           zip -r ${PLUGIN_SLUG}-${VERSION}.zip ${PLUGIN_SLUG}
-          
-          echo "ZIP_FILE=${PLUGIN_SLUG}-${VERSION}.zip" >> $GITHUB_ENV
+
+          echo "zip_file=build/${PLUGIN_SLUG}-${VERSION}.zip" >> "$GITHUB_OUTPUT"
 
       - name: Upload release asset
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
-          files: build/${{ env.ZIP_FILE }}
+          files: ${{ steps.package.outputs.zip_file }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

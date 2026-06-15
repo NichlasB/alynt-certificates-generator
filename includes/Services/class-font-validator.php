@@ -11,6 +11,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Services;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 
 class Alynt_Certificate_Generator_Font_Validator {
@@ -185,7 +187,10 @@ class Alynt_Certificate_Generator_Font_Validator {
 			}
 		}
 
-		return array( 'offset' => 0, 'length' => 0 );
+		return array(
+			'offset' => 0,
+			'length' => 0,
+		);
 	}
 
 	/**
@@ -199,15 +204,18 @@ class Alynt_Certificate_Generator_Font_Validator {
 		fseek( $handle, $offset );
 		$name_header = fread( $handle, 6 );
 		if ( strlen( $name_header ) < 6 ) {
-			return array( 'family_name' => '', 'full_name' => '' );
+			return array(
+				'family_name' => '',
+				'full_name'   => '',
+			);
 		}
 
-		$name_data = unpack( 'nformat/ncount/nstringOffset', $name_header );
+		$name_data     = unpack( 'nformat/ncount/nstringOffset', $name_header );
 		$string_offset = $offset + $name_data['stringOffset'];
-		$count = $name_data['count'];
+		$count         = $name_data['count'];
 
 		$family_name = '';
-		$full_name = '';
+		$full_name   = '';
 
 		for ( $i = 0; $i < $count; $i++ ) {
 			$name_record = fread( $handle, 12 );

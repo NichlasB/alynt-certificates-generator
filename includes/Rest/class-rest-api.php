@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Rest;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_REST_Request;
 use WP_REST_Server;
 use Alynt\CertificateGenerator\Services\Alynt_Certificate_Generator_Download_Service;
@@ -73,11 +75,15 @@ class Alynt_Certificate_Generator_Rest_Api {
 				'permission_callback' => array( $this, 'can_manage_templates' ),
 				'args'                => array(
 					'id'        => array(
-						'type'     => 'integer',
-						'required' => true,
+						'type'              => 'integer',
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => array( $this, 'validate_positive_integer' ),
 					),
 					'variables' => array(
-						'required' => true,
+						'required'          => true,
+						'sanitize_callback' => array( $this, 'sanitize_variables_payload' ),
+						'validate_callback' => array( $this, 'validate_variables_payload' ),
 					),
 				),
 			)
@@ -92,12 +98,16 @@ class Alynt_Certificate_Generator_Rest_Api {
 				'permission_callback' => '__return_true',
 				'args'                => array(
 					'certificate_id' => array(
-						'type'     => 'string',
-						'required' => true,
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => array( $this, 'validate_certificate_id' ),
 					),
-					'token' => array(
-						'type'     => 'string',
-						'required' => true,
+					'token'          => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => array( $this, 'validate_non_empty_string' ),
 					),
 				),
 			)
@@ -112,8 +122,10 @@ class Alynt_Certificate_Generator_Rest_Api {
 				'permission_callback' => '__return_true',
 				'args'                => array(
 					'id' => array(
-						'type'     => 'integer',
-						'required' => true,
+						'type'              => 'integer',
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => array( $this, 'validate_positive_integer' ),
 					),
 				),
 			)
@@ -125,11 +137,13 @@ class Alynt_Certificate_Generator_Rest_Api {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this->bulk_service, 'get_status' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( $this, 'can_manage_templates' ),
 				'args'                => array(
 					'bulk_id' => array(
-						'type'     => 'string',
-						'required' => true,
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => array( $this, 'validate_bulk_id' ),
 					),
 				),
 			)
@@ -146,8 +160,10 @@ class Alynt_Certificate_Generator_Rest_Api {
 					'permission_callback' => array( $this, 'can_manage_templates' ),
 					'args'                => array(
 						'template_id' => array(
-							'type'     => 'integer',
-							'required' => false,
+							'type'              => 'integer',
+							'required'          => false,
+							'sanitize_callback' => 'absint',
+							'validate_callback' => array( $this, 'validate_optional_integer' ),
 						),
 					),
 				),
@@ -157,12 +173,16 @@ class Alynt_Certificate_Generator_Rest_Api {
 					'permission_callback' => array( $this, 'can_manage_options' ),
 					'args'                => array(
 						'family_name' => array(
-							'type'     => 'string',
-							'required' => true,
+							'type'              => 'string',
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_text_field',
+							'validate_callback' => array( $this, 'validate_non_empty_string' ),
 						),
 						'template_id' => array(
-							'type'     => 'integer',
-							'required' => false,
+							'type'              => 'integer',
+							'required'          => false,
+							'sanitize_callback' => 'absint',
+							'validate_callback' => array( $this, 'validate_optional_integer' ),
 						),
 					),
 				),
@@ -178,12 +198,16 @@ class Alynt_Certificate_Generator_Rest_Api {
 				'permission_callback' => array( $this, 'can_manage_options' ),
 				'args'                => array(
 					'family_slug' => array(
-						'type'     => 'string',
-						'required' => true,
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_key',
+						'validate_callback' => array( $this, 'validate_slug' ),
 					),
 					'template_id' => array(
-						'type'     => 'integer',
-						'required' => false,
+						'type'              => 'integer',
+						'required'          => false,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => array( $this, 'validate_optional_integer' ),
 					),
 				),
 			)
@@ -198,16 +222,22 @@ class Alynt_Certificate_Generator_Rest_Api {
 				'permission_callback' => array( $this, 'can_manage_options' ),
 				'args'                => array(
 					'family_slug' => array(
-						'type'     => 'string',
-						'required' => true,
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_key',
+						'validate_callback' => array( $this, 'validate_slug' ),
 					),
-					'weight' => array(
-						'type'     => 'string',
-						'required' => true,
+					'weight'      => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_key',
+						'validate_callback' => array( $this, 'validate_slug' ),
 					),
 					'template_id' => array(
-						'type'     => 'integer',
-						'required' => false,
+						'type'              => 'integer',
+						'required'          => false,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => array( $this, 'validate_optional_integer' ),
 					),
 				),
 			)
@@ -222,20 +252,110 @@ class Alynt_Certificate_Generator_Rest_Api {
 				'permission_callback' => array( $this, 'can_manage_options' ),
 				'args'                => array(
 					'family_slug' => array(
-						'type'     => 'string',
-						'required' => true,
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_key',
+						'validate_callback' => array( $this, 'validate_slug' ),
 					),
-					'weight' => array(
-						'type'     => 'string',
-						'required' => true,
+					'weight'      => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_key',
+						'validate_callback' => array( $this, 'validate_slug' ),
 					),
 					'template_id' => array(
-						'type'     => 'integer',
-						'required' => false,
+						'type'              => 'integer',
+						'required'          => false,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => array( $this, 'validate_optional_integer' ),
 					),
 				),
 			)
 		);
+	}
+
+	/**
+	 * Validate a required positive integer REST arg.
+	 *
+	 * @param mixed $value Value.
+	 * @return bool
+	 */
+	public function validate_positive_integer( $value ): bool {
+		return absint( $value ) > 0;
+	}
+
+	/**
+	 * Validate an optional integer REST arg.
+	 *
+	 * @param mixed $value Value.
+	 * @return bool
+	 */
+	public function validate_optional_integer( $value ): bool {
+		return null === $value || '' === $value || absint( $value ) >= 0;
+	}
+
+	/**
+	 * Validate non-empty string REST args.
+	 *
+	 * @param mixed $value Value.
+	 * @return bool
+	 */
+	public function validate_non_empty_string( $value ): bool {
+		return '' !== sanitize_text_field( (string) $value );
+	}
+
+	/**
+	 * Validate generated certificate IDs.
+	 *
+	 * @param mixed $value Value.
+	 * @return bool
+	 */
+	public function validate_certificate_id( $value ): bool {
+		return 1 === preg_match( '/\A[A-Za-z0-9_-]+\z/', (string) $value );
+	}
+
+	/**
+	 * Validate bulk IDs.
+	 *
+	 * @param mixed $value Value.
+	 * @return bool
+	 */
+	public function validate_bulk_id( $value ): bool {
+		return 1 === preg_match( '/\A[A-Za-z0-9_-]+\z/', (string) $value );
+	}
+
+	/**
+	 * Validate slug-like REST args.
+	 *
+	 * @param mixed $value Value.
+	 * @return bool
+	 */
+	public function validate_slug( $value ): bool {
+		return 1 === preg_match( '/\A[a-z0-9_-]+\z/', (string) $value );
+	}
+
+	/**
+	 * Validate template variables payload.
+	 *
+	 * @param mixed $value Value.
+	 * @return bool
+	 */
+	public function validate_variables_payload( $value ): bool {
+		return is_string( $value ) || is_array( $value ) || is_object( $value );
+	}
+
+	/**
+	 * Sanitize template variables payload without destroying JSON structure.
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	public function sanitize_variables_payload( $value ) {
+		if ( is_array( $value ) || is_object( $value ) ) {
+			return $value;
+		}
+
+		return is_string( $value ) ? wp_unslash( $value ) : '';
 	}
 
 	/**
@@ -245,6 +365,8 @@ class Alynt_Certificate_Generator_Rest_Api {
 	 * @return bool
 	 */
 	public function can_manage_templates( WP_REST_Request $request ): bool {
+		unset( $request );
+
 		return \current_user_can( ALYNT_CERTIFICATE_GENERATOR_CAPABILITY_MANAGE );
 	}
 
@@ -255,6 +377,8 @@ class Alynt_Certificate_Generator_Rest_Api {
 	 * @return bool
 	 */
 	public function can_manage_options( WP_REST_Request $request ): bool {
+		unset( $request );
+
 		return \current_user_can( 'manage_options' );
 	}
 }

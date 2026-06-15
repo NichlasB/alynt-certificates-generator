@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\AdminUi\Tabs;
 
+defined( 'ABSPATH' ) || exit;
+
 abstract class Alynt_Certificate_Generator_Tab_Base {
 	/**
 	 * Tab ID.

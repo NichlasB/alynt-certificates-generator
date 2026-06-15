@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Alynt\CertificateGenerator\Rest;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -30,15 +32,18 @@ class Alynt_Certificate_Generator_Bulk_Service {
 			return new WP_Error( 'acg_invalid_bulk', __( 'Bulk ID missing.', 'alynt-certificate-generator' ), array( 'status' => 400 ) );
 		}
 
-		$total     = (int) get_transient( 'acg_bulk_' . $bulk_id . '_total' );
-		$processed = (int) get_transient( 'acg_bulk_' . $bulk_id . '_processed' );
-		$failed    = (int) get_transient( 'acg_bulk_' . $bulk_id . '_failed' );
+		$total           = (int) get_transient( 'acg_bulk_' . $bulk_id . '_total' );
+		$processed       = (int) get_transient( 'acg_bulk_' . $bulk_id . '_processed' );
+		$failed          = (int) get_transient( 'acg_bulk_' . $bulk_id . '_failed' );
+		$schedule_failed = (int) get_transient( 'acg_bulk_' . $bulk_id . '_schedule_failed' );
 
 		return new WP_REST_Response(
 			array(
-				'total'     => $total,
-				'processed' => $processed,
-				'failed'    => $failed,
+				'total'           => $total,
+				'processed'       => $processed,
+				'failed'          => $failed,
+				'schedule_failed' => $schedule_failed,
+				'complete'        => $total > 0 && $processed >= $total - $schedule_failed,
 			),
 			200
 		);
