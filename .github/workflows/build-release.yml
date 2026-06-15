@@ -53,6 +53,7 @@ jobs:
                     --exclude='tests' \
                     --exclude='scripts' \
                     --exclude='build' \
+                    --exclude='assets/src' \
                     --exclude='.gitignore' \
                     --exclude='.gitattributes' \
                     --exclude='.phpcs.xml' \
