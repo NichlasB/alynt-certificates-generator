@@ -32,6 +32,7 @@
   cursor: move;
   pointer-events: auto;
   user-select: none;
+  overflow-wrap: break-word;
 }
 
 .acg-variable-marker:focus {

@@ -153,9 +153,16 @@ class Alynt_Certificate_Generator_Pdf_Service {
 			$x_mm = $this->geometry->px_to_mm( $x_px );
 			$y_mm = $this->geometry->px_to_mm( $y_px );
 
-			$align      = $style['align'] ?? 'left';
-			$text_width = $pdf->GetStringWidth( $text );
+			$align     = $style['align'] ?? 'left';
+			$max_width = isset( $style['text_max_width'] ) ? (int) $style['text_max_width'] : 0;
 
+			if ( $max_width > 0 ) {
+				$max_width = min( $max_width, $image_width );
+				$this->write_wrapped_text( $pdf, $text, $x_mm, $y_mm, $max_width, $font_size, $align, $style );
+				continue;
+			}
+
+			$text_width = $pdf->GetStringWidth( $text );
 			if ( 'center' === $align ) {
 				$x_mm -= $text_width / 2;
 			} elseif ( 'right' === $align ) {
@@ -306,6 +313,88 @@ class Alynt_Certificate_Generator_Pdf_Service {
 		}
 
 		return $style_string;
+	}
+
+	/**
+	 * Write text inside a max-width wrapping box.
+	 *
+	 * @param TCPDF  $pdf          PDF instance.
+	 * @param string $text         Text content.
+	 * @param float  $x_mm         Anchor X coordinate in millimeters.
+	 * @param float  $y_mm         Y coordinate in millimeters.
+	 * @param int    $max_width_px Max text box width in template pixels.
+	 * @param float  $font_size    Font size in points.
+	 * @param string $align        Text alignment.
+	 * @param array  $style        Variable style data.
+	 */
+	private function write_wrapped_text(
+		TCPDF $pdf,
+		string $text,
+		float $x_mm,
+		float $y_mm,
+		int $max_width_px,
+		float $font_size,
+		string $align,
+		array $style
+	): void {
+		$box_width_mm = $this->geometry->px_to_mm( $max_width_px );
+		if ( $box_width_mm <= 0 ) {
+			$pdf->Text( $x_mm, $y_mm, $text );
+			return;
+		}
+
+		if ( 'center' === $align ) {
+			$x_mm -= $box_width_mm / 2;
+		} elseif ( 'right' === $align ) {
+			$x_mm -= $box_width_mm;
+		}
+
+		$line_height = isset( $style['line_height'] ) ? (float) $style['line_height'] : 1.2;
+		if ( $line_height < 0.8 ) {
+			$line_height = 0.8;
+		} elseif ( $line_height > 3 ) {
+			$line_height = 3;
+		}
+
+		$cell_height_mm = ( $font_size * $line_height / 72 ) * 25.4;
+		$pdf_align      = $this->map_text_align_for_pdf( $align );
+
+		$pdf->MultiCell(
+			$box_width_mm,
+			$cell_height_mm,
+			$text,
+			0,
+			$pdf_align,
+			false,
+			1,
+			$x_mm,
+			$y_mm,
+			true,
+			0,
+			false,
+			true,
+			0,
+			'T',
+			false
+		);
+	}
+
+	/**
+	 * Map style alignment to TCPDF alignment.
+	 *
+	 * @param string $align Alignment value.
+	 * @return string
+	 */
+	private function map_text_align_for_pdf( string $align ): string {
+		if ( 'center' === $align ) {
+			return 'C';
+		}
+
+		if ( 'right' === $align ) {
+			return 'R';
+		}
+
+		return 'L';
 	}
 
 	/**

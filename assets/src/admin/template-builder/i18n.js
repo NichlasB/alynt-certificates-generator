@@ -49,6 +49,8 @@ const fallbackStrings = {
   typeImage: 'Image',
   typeSelect: 'Select',
   typeText: 'Text',
+  textMaxWidth: 'Text Max W',
+  lineHeight: 'Line Height',
   useThisImage: 'Use this image',
   variableLabel: 'Variable %d',
   xCoordinate: 'X:',

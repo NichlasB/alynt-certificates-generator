@@ -74,6 +74,31 @@ export const createStyleCell = (variable, renderOverlay) => {
     renderOverlay();
   });
 
+  const textMaxWidthInput = document.createElement('input');
+  textMaxWidthInput.type = 'number';
+  textMaxWidthInput.setAttribute('aria-label', i18n.textMaxWidth);
+  textMaxWidthInput.min = '0';
+  textMaxWidthInput.value = variable.style.text_max_width || 0;
+  textMaxWidthInput.addEventListener('input', () => {
+    variable.style.text_max_width = Number(textMaxWidthInput.value) || 0;
+    updateHiddenInput();
+    renderOverlay();
+  });
+
+  const lineHeightInput = document.createElement('input');
+  lineHeightInput.type = 'number';
+  lineHeightInput.setAttribute('aria-label', i18n.lineHeight);
+  lineHeightInput.min = '0.8';
+  lineHeightInput.max = '3';
+  lineHeightInput.step = '0.1';
+  lineHeightInput.value = variable.style.line_height || 1.2;
+  lineHeightInput.addEventListener('input', () => {
+    const value = Number(lineHeightInput.value);
+    variable.style.line_height = Number.isFinite(value) ? Math.min(3, Math.max(0.8, value)) : 1.2;
+    updateHiddenInput();
+    renderOverlay();
+  });
+
   const styleRow = document.createElement('div');
   styleRow.className = 'acg-style-row';
   styleRow.append(`${i18n.font} `, fontSelect, ` ${i18n.size} `, sizeInput, ` ${i18n.color} `, colorInput);
@@ -82,8 +107,19 @@ export const createStyleCell = (variable, renderOverlay) => {
   styleRow2.className = 'acg-style-row acg-style-row-compact';
   styleRow2.append(`${i18n.align} `, alignSelect, ` ${i18n.bold} `, boldInput, ` ${i18n.italic} `, italicInput);
 
+  const textBoxRow = document.createElement('div');
+  textBoxRow.className = 'acg-style-row';
+  const textMaxWidthLabel = document.createElement('label');
+  textMaxWidthLabel.append(`${i18n.textMaxWidth} `, textMaxWidthInput);
+  const lineHeightLabel = document.createElement('label');
+  lineHeightLabel.append(`${i18n.lineHeight} `, lineHeightInput);
+  textBoxRow.append(textMaxWidthLabel, lineHeightLabel);
+
   styleCell.appendChild(styleRow);
   styleCell.appendChild(styleRow2);
+  if (variable.type !== 'image') {
+    styleCell.appendChild(textBoxRow);
+  }
 
   const typeRow = createTypeSpecificRow(variable);
   if (typeRow.childNodes.length > 0) {

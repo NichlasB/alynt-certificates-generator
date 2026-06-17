@@ -1,6 +1,15 @@
 import { migrateCoordinates } from './coordinates.js';
 import { i18n, sprintfNumber } from './i18n.js';
 
+const normalizeNumber = (value, fallback, min, max = Infinity) => {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    return fallback;
+  }
+
+  return Math.min(max, Math.max(min, number));
+};
+
 export const parseVariables = (value) => {
   if (!value) {
     return [];
@@ -30,6 +39,8 @@ export const ensureDefaults = (variable, index) => {
       align: variable.style?.align || 'left',
       bold: variable.style?.bold || false,
       italic: variable.style?.italic || false,
+      text_max_width: normalizeNumber(variable.style?.text_max_width, 0, 0),
+      line_height: normalizeNumber(variable.style?.line_height, 1.2, 0.8, 3),
     },
     date_format: variable.date_format || 'Y-m-d',
     auto_type: variable.auto_type || 'certificate_id',

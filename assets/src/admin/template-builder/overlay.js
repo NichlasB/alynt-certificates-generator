@@ -16,6 +16,20 @@ export const applyMarkerStyles = (marker, variable) => {
   marker.style.fontWeight = style.bold ? 'bold' : 'normal';
   marker.style.fontStyle = style.italic ? 'italic' : 'normal';
   marker.style.textAlign = style.align || 'left';
+  const lineHeight = Number(style.line_height);
+  marker.style.lineHeight = String(Number.isFinite(lineHeight) ? Math.min(3, Math.max(0.8, lineHeight)) : 1.2);
+
+  const maxWidth = Number(style.text_max_width) || 0;
+  if (maxWidth > 0) {
+    const displayWidth = Math.round(Math.min(maxWidth, imgWidth || maxWidth) * displayScale);
+    marker.style.width = `${displayWidth}px`;
+    marker.style.maxWidth = `${displayWidth}px`;
+    marker.style.whiteSpace = 'normal';
+  } else {
+    marker.style.width = 'auto';
+    marker.style.maxWidth = 'none';
+    marker.style.whiteSpace = 'nowrap';
+  }
 };
 
 export const renderOverlay = () => {

@@ -232,6 +232,8 @@ class Alynt_Certificate_Generator_Template_Admin {
 			'typeImage'                  => __( 'Image', 'alynt-certificate-generator' ),
 			'typeSelect'                 => __( 'Select', 'alynt-certificate-generator' ),
 			'typeText'                   => __( 'Text', 'alynt-certificate-generator' ),
+			'textMaxWidth'               => __( 'Text Max W', 'alynt-certificate-generator' ),
+			'lineHeight'                 => __( 'Line Height', 'alynt-certificate-generator' ),
 			'useThisImage'               => __( 'Use this image', 'alynt-certificate-generator' ),
 			/* translators: %d: variable number. */
 			'variableLabel'              => __( 'Variable %d', 'alynt-certificate-generator' ),
